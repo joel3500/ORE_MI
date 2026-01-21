@@ -1,0 +1,545 @@
+{% extends "base_2.html" %}
+
+{% block content %}
+
+    <style>
+    body{background:#f7f7fb}
+    .container{width:100%; margin:10px auto;padding:16px; background-color:#f1f1f1;; border-radius:10px; }
+    .card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin-bottom:16px}
+    .muted{color:#6b7280;font-size:.9rem}
+    .hstack{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .vstack{display:flex;gap:8px;flex-direction:column}
+    .btn{border:1px solid #e5e7eb;border-radius:10px;padding:6px 10px;background:#111827;color:#fff;cursor:pointer}
+    .btn.light{background:#fff;color:#111827}
+    .btn.small{padding:4px 8px;font-size:.85rem;border-radius:8px}
+    .btn.disabled{opacity:.5;cursor:not-allowed}
+    .input, textarea, select{border:1px solid #e5e7eb;border-radius:10px;padding:8px;width:100%}
+    .title{font-weight:700;font-size:1.1rem}
+    .meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.85rem;color:#6b7280}
+    .flag{font-size:1.1rem}
+    .video-box{border:1px dashed #e5e7eb;border-radius:10px;padding:8px;background:#fafafa}
+    .pager{display:flex;align-items:center;justify-content:space-between;margin:8px 0}
+    details summary{cursor:pointer; user-select:none}
+    .comment-actions{display:flex;gap:8px;align-items:center;margin-top:6px}
+    .comment-body{white-space:pre-wrap}
+    .link{color:#2563eb;text-decoration:none}
+    .link:hover{text-decoration:underline}
+    .replies{margin-left:24px;border-left:3px solid #e5e7eb;padding-left:12px}
+    .tip{font-size:.85rem;color:#6b7280}
+  </style>
+
+        <p class="sous_section"> LISTE DES TÉMOIGNAGES </p>
+        <div class="text-service-aide">
+            Soyez les premiers èa nous envoyer vos témoignages èa l'email indiqué en bas de page.
+            Des cartes cadeaux seront envoyées aux 20 premières personnes qui nous enveront leurs témoignages.
+        </div><br><br>
+
+        <!--
+            <div class="text-service-aide">
+                <div class="container">
+                  <div class="card hstack" style="justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+                    <div class="hstack" style="gap:8px;flex:1 1 420px">
+                      <input id="q" class="input" placeholder="Rechercher (titre, auteur)..." style="flex:1 1 320px"/>
+                      <button id="btn-search" class="btn light">Rechercher</button>
+                      <button id="btn-clear" class="btn light">Effacer</button>
+                    </div>
+                    <div class="hstack" style="gap:8px">
+                      <label class="muted">Trier&nbsp;:</label>
+                      <select id="sort" class="input" style="width:200px">
+                        <option value="recent">Plus récents</option>
+                        <option value="commented">Plus commentés</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div id="pager-top" class="pager"></div>
+                  <div id="items"></div>
+                  <div id="pager-bottom" class="pager"></div>
+                </div>
+            </div><br><br>
+        -->
+
+        
+        <!--
+            <p class="sous_section"> AJOUTER UN NOUVEAU TÉMOIGNAGE </p>
+        
+            <div class="text-service-aide">
+                <div class="container">
+                  <div class="card vstack" id="new-testimonial">
+                    <div class="hstack" style="gap:10px;flex-wrap:wrap">
+                      <input id="t-author" class="input" placeholder="Nom complet" style="flex:1 1 240px"/>
+                      <input id="t-title" class="input" placeholder="Titre du témoignage" style="flex:2 1 340px"/>
+                    </div>
+                    <div class="hstack" style="gap:10px;flex-wrap:wrap">
+                      <input id="t-file" type="file" accept="video/*" class="input" style="flex:1 1 340px"/>
+                      <span class="muted">Vidéo ≤ 24 Mo</span>
+                    </div>
+                    <div class="hstack" style="gap:10px;flex-wrap:wrap">
+                      <button id="btn-upload" class="btn">Publier la vidéo</button>
+                      <span class="muted">Formats courants acceptés (mp4, mov, webm…)</span>
+                    </div>
+                  </div>
+                </div>
+            </div><br><br>
+        -->
+
+        <p class="sous_section"> PRÉCAUTIONS À PRENDRE AVANT DE S'ENGAGER ( EXEMPLE DU CANADA ) </p>
+        
+        <div class="text-service-aide">
+            Si vous avez une expérience à partager, à l'instar des vidéos plus bas, n'hésitez pas èa nous la partager. 
+            Cela permet de tenir la communauté informée. Cela permet aux autres visiteurs d'apprendre de vos erreurs. <br><br>
+            Sentez-vous libre de donner des conseils si vous en avez, et c'est la communauté qui vous en remerciera. Lachez-vous :) !!! 
+        </div><br><br>
+
+        <p class="sous_section"> PRÉCAUTIONS À PRENDRE AVANT DE S'ENGAGER ( EXEMPLE DU CANADA ) </p>
+        
+        <div class="text-service-aide">
+            <b> Suis-je mentalement prêt pour venir étudier étudier au Saguenay ? Que dois-je savoir avant de m'engager dans ce PARCOURS DU COMBATTANT  </b> <br>
+            
+            Nous vous presentons, autant les bonnes que les mauvaises expériences, sans filtre, car mieux vaut [etre averti].
+            Attention, ce n'est ni pour vous encourager, ni pour vous décourager, mais pour vous informer sur les réalités, 
+            sur du concret, de la part des étudiants qui les ont vécu eux même. Il y a de belles expériences, 
+            mais il y en a aussi de mauvaises. Ce sont juste des témoignages qui vous donneront des idées. 
+            Apprenons de leurs erreurs, et suivons bien leurs conseils d'intégration. <br><br>
+
+            <div class="cadre_video_interieur-text-service-aide">
+                <iframe src="https://www.youtube.com/embed/Bu-h8aS8bEM?si=FhvqqsQjlZ0YAI3L" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            </div><br>
+
+            <div class="cadre_video_interieur-text-service-aide">
+                <iframe src="https://www.youtube.com/embed/0pTueRiB3Cg?si=WLXdSmp3wlfp9IkG" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            </div><br>
+
+            <div class="cadre_video_interieur-text-service-aide">
+                <iframe src="https://www.youtube.com/embed/CgIv88BoYfQ?si=RfKUO07UYIT5EPSS" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            </div><br>
+
+            <div class="cadre_video_interieur-text-service-aide">
+                <iframe src="https://www.youtube.com/embed/K4T1O-bGseo?si=NdEZ-RJSFjaN2aNb" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            </div>
+        </div><br><br><br>
+
+        <hr><br>
+
+        <div class="text-service-aide">
+            <b>Si vous éprouvez des problèmes techniques pour ajouter votre Témoignage : </b> <br> 
+            Veuillez me l'envoyer un email à <b>oremi.joel@gmail.com</b> dans lequel vous indiquerez : <br><br>
+            <b>Titre du Témoignage</b> : (ce qui apparaitra en entete en gras sur cette page)  <br>
+            <b>Court Énnoncé</b> : Faites-le court, car c'est vraiment la vidéo qui nous interesse ici (moins de 24 Mo).  <br>
+            <b>Vos Contacts</b> : Votre nom complet et Numéro de Telephone (Numéro Facultatif : si les visiteurs veullent vous contacter ).  <br>
+            <b>Géo-Localisation</b> : Ville, d'oèu vous nous adressez ce message, et Établissement scolaire affilié (s'il y a lieu) <br>
+            <b>Une seule Vidéo (moins de 24 Mo)</b> : 1 à 4 images decrivant l'evenement. (désignez laquelle est l'image principale s'il y a une image que vous désirez faire apparaitre en grand)<br>
+		    </div><br><br><br>
+
+        <script>
+            // ---------- API endpoints ----------
+            const API = {
+              list:   (p, s, q, sort) => `/api/testimonials?page=${p}&page_size=${s}` + (q?`&q=${encodeURIComponent(q)}`:'') + (sort?`&sort=${encodeURIComponent(sort)}`:''),
+              create: '/api/testimonials',
+              comments: id => `/api/testimonials/${id}/comments`,
+              commentCreate: '/api/testimonials/comments',
+              commentUpdate: id => `/api/testimonials/comments/${id}`,
+              commentDelete: id => `/api/testimonials/comments/${id}`,
+
+              replies: cid => `/api/testimonials/comments/${cid}/replies`,
+              replyCreate: '/api/testimonials/replies',
+              replyUpdate: rid => `/api/testimonials/replies/${rid}`,
+              replyDelete: rid => `/api/testimonials/replies/${rid}`
+            };
+            const PAGE_SIZE = 6;
+            let currentPage = 1;
+            let currentQuery = '';
+            let currentSort  = 'recent';
+
+            // Tokens in localStorage
+            const TOK_COMMENT = "testimonial_comment_tokens";
+            const TOK_TESTIM  = "testimonial_tokens";
+            const TOK_REPLY   = "testimonial_reply_tokens";
+            function getMap(key){ try{ return JSON.parse(localStorage.getItem(key) || "{}"); }catch{ return {}; } }
+            function setMap(key, m){ localStorage.setItem(key, JSON.stringify(m)); }
+            function getToken(mapKey, id){ return getMap(mapKey)[String(id)] || ""; }
+            function setToken(mapKey, id, token){ const m=getMap(mapKey); m[String(id)]=token; setMap(mapKey, m); }
+
+            function flagEmoji(cc){ if(!cc) return ''; cc=cc.toUpperCase(); return cc.replace(/./g,c=>String.fromCodePoint(127397+c.charCodeAt(0))); }
+            function formatTime(iso){ try{ return new Date(iso).toLocaleString(); }catch{ return iso; } }
+            function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;', "'":'&#39;'}[c])); }
+            function el(html){ const t=document.createElement('template'); t.innerHTML=html.trim(); return t.content.firstChild; }
+
+            function setURL(page){
+              const params=new URLSearchParams();
+              if(page>1) params.set("p",page);
+              if(currentQuery) params.set("q",currentQuery);
+              if(currentSort && currentSort!=="recent") params.set("sort",currentSort);
+              const qs=params.toString();
+              history.replaceState(null,"", qs?`?${qs}`:location.pathname);
+            }
+
+            function renderPager(target, meta){
+              const {page, total_pages, has_prev, has_next, total} = meta;
+              const node = el(`<div class="hstack" style="width:100%"></div>`);
+              const left = el(`<div class="muted">Page ${page} / ${total_pages} — ${total} témoignage(s)</div>`);
+              const right = el(`<div class="hstack" style="gap:8px"></div>`);
+              const prev = el(`<button class="btn light ${has_prev?'':'disabled'}">← Précédent</button>`);
+              const next = el(`<button class="btn light ${has_next?'':'disabled'}">Suivant →</button>`);
+              prev.onclick = ()=>{ if(has_prev) loadItems(page-1); };
+              next.onclick = ()=>{ if(has_next) loadItems(page+1); };
+              right.appendChild(prev); right.appendChild(next);
+              node.appendChild(left); node.appendChild(right);
+              target.innerHTML=''; target.appendChild(node);
+            }
+
+            async function loadItems(page=1, q=currentQuery, sort=currentSort){
+              currentPage = page; currentQuery = q; currentSort = sort; setURL(page);
+              const r = await fetch(API.list(page, PAGE_SIZE, currentQuery, currentSort));
+              const data = await r.json();
+
+              const pagerTop = document.getElementById('pager-top');
+              const pagerBottom = document.getElementById('pager-bottom');
+              const box = document.getElementById('items');
+              box.innerHTML='';
+
+              if(!data.items || !data.items.length){
+                box.appendChild(el(`<div class="card muted">Aucun témoignage — sois le premier ✨</div>`));
+                pagerTop.innerHTML=''; pagerBottom.innerHTML='';
+                return;
+              }
+
+              document.getElementById("q").value = (currentQuery||"");
+              document.getElementById("sort").value = (currentSort||"recent");
+              renderPager(pagerTop, data);
+
+              for(const t of data.items){
+                const node = renderItem(t);
+                box.appendChild(node);
+              }
+
+              renderPager(pagerBottom, data);
+            }
+
+            function renderItem(t){
+              const node = el(`<div class="card vstack"></div>`);
+              const head = el(`<div class="vstack">
+                  <div class="title"><a class="link" href="temoignage.html?id=${t.id}">${escapeHtml(t.title)}</a></div>
+                  <div class="meta">
+                    <span class="flag">${flagEmoji(t.country_code)}</span>
+                    <span>${escapeHtml(t.author_name)}</span>
+                    <span>· ${escapeHtml([t.city,t.country].filter(Boolean).join(', '))}</span>
+                    <span>· ${formatTime(t.created_at)}</span>
+                    <span>· ${t.comment_count||0} commentaire(s)</span>
+                  </div>
+                </div>`);
+              node.appendChild(head);
+
+              const videoBox = el(`<div class="video-box">
+                  <video controls preload="metadata" style="width:100%;max-height:60vh;border-radius:8px;background:#000">
+                    <source src="${escapeHtml(t.video_url||'')}" type="${escapeHtml(t.mime_type||'video/mp4')}"/>
+                    Votre navigateur ne supporte pas la vidéo HTML5.
+                  </video>
+                </div>`);
+              node.appendChild(videoBox);
+
+              const detailsEl = el(`<details><summary>Commentaires</summary></details>`);
+              const commentsWrap = el(`<div class="vstack" style="margin-top:8px"></div>`);
+              detailsEl.appendChild(commentsWrap);
+              detailsEl.addEventListener('toggle', async (e)=>{
+                if(detailsEl.open && !detailsEl.dataset.loaded){
+                  await loadComments(t.id, commentsWrap);
+                  detailsEl.dataset.loaded = '1';
+                }
+              });
+              node.appendChild(detailsEl);
+
+              const form = el(`<div class="vstack" style="margin-top:8px">
+                  <div class="hstack" style="gap:10px;flex-wrap:wrap"><input class="input name" placeholder="Nom complet" style="flex:1 1 240px"/></div>
+                  <textarea class="input body" rows="3" placeholder="Commentaire..."></textarea>
+                  <div class="hstack"><button class="btn post">Publier le commentaire</button></div>
+                </div>`);
+              form.querySelector('.post').onclick = async ()=>{
+                const author = form.querySelector('.name').value.trim();
+                const body = form.querySelector('.body').value.trim();
+                if(!author || !body) return alert('Nom et commentaire requis.');
+                try{
+                  const resp = await fetch(API.commentCreate, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ testimonial_id: t.id, author_name: author, body }) });
+                  const out = await resp.json();
+                  if(!resp.ok){ alert(out.error || 'Erreur'); return; }
+                  if(out.token && out.comment && out.comment.id){
+                    setToken("testimonial_comment_tokens", out.comment.id, out.token);
+                    try{ await navigator.clipboard.writeText(out.token); }catch{}
+                    alert("Code d'édition copié :\n" + out.token);
+                  }
+                  form.querySelector('.name').value=''; form.querySelector('.body').value='';
+                  detailsEl.dataset.loaded=''; detailsEl.open=true;
+                  await loadComments(t.id, commentsWrap);
+                }catch(err){
+                  alert('Échec de la publication du commentaire.');
+                  console.error(err);
+                }
+              };
+              node.appendChild(form);
+
+              return node;
+            }
+
+            // Render comments (with replies)
+            async function loadComments(id, target){
+              target.innerHTML = '<div class="muted">Chargement…</div>';
+              try{
+                const r = await fetch(API.comments(id));
+                const data = await r.json();
+                target.innerHTML='';
+                if(!data.items || !data.items.length){
+                  target.appendChild(el('<div class="muted">Aucun commentaire pour le moment.</div>'));
+                  return;
+                }
+                for(const c of data.items){
+                  const item = el(`<div class="card" style="margin:0 0 8px 0;padding:10px"></div>`);
+                  const meta = el(`<div class="meta">
+                      <span class="flag">${flagEmoji(c.country_code)}</span>
+                      <span>${escapeHtml(c.author_name)}</span>
+                      <span>· ${escapeHtml([c.city,c.country].filter(Boolean).join(', '))}</span>
+                      <span>· ${formatTime(c.created_at)}</span>
+                    </div>`);
+                  const body = el(`<div class="comment-body">${escapeHtml(c.body)}</div>`);
+                  item.appendChild(meta);
+                  item.appendChild(body);
+
+                  const ctoken = getToken("testimonial_comment_tokens", c.id);
+                  if (ctoken && !c.deleted){
+                    const actions = el(`<div class="comment-actions"></div>`);
+                    const btnEdit = el(`<button class="btn small light">Modifier</button>`);
+                    const btnDelete = el(`<button class="btn small light">Supprimer</button>`);
+                    actions.appendChild(btnEdit); actions.appendChild(btnDelete);
+                    item.appendChild(actions);
+
+                    btnEdit.onclick = ()=>{
+                      const ta = el(`<textarea class="input" rows="3">${escapeHtml(c.body)}</textarea>`);
+                      const row = el(`<div class="hstack" style="gap:8px;margin-top:6px"></div>`);
+                      const btnSave = el(`<button class="btn small">Enregistrer</button>`);
+                      const btnCancel = el(`<button class="btn small light">Annuler</button>`);
+                      row.appendChild(btnSave); row.appendChild(btnCancel);
+                      item.replaceChild(ta, body);
+                      actions.style.display = "none";
+                      item.appendChild(row);
+                      btnCancel.onclick = ()=>{ item.replaceChild(body, ta); actions.style.display=""; row.remove(); };
+                      btnSave.onclick = async ()=>{
+                        const newBody = ta.value.trim();
+                        if(!newBody) return alert("Le commentaire ne peut pas être vide.");
+                        try{
+                          const resp = await fetch(API.commentUpdate(c.id), {
+                            method: "PUT", headers: {"Content-Type":"application/json"},
+                            body: JSON.stringify({ token: ctoken, body: newBody })
+                          });
+                          const out = await resp.json();
+                          if(!resp.ok){ alert(out.error || "Échec de la mise à jour."); return; }
+                          await loadComments(id, target);
+                        }catch(err){ alert("Erreur réseau pendant la mise à jour."); }
+                      };
+                    };
+                    btnDelete.onclick = async ()=>{
+                      if(!confirm("Supprimer ce commentaire ?")) return;
+                      try{
+                        const resp = await fetch(API.commentDelete(c.id), {
+                          method: "DELETE", headers: {"Content-Type":"application/json"},
+                          body: JSON.stringify({ token: ctoken })
+                        });
+                        const out = await resp.json().catch(()=>({}));
+                        if(!resp.ok){ alert(out.error || "Échec de la suppression."); return; }
+                        await loadComments(id, target);
+                      }catch(err){ alert("Erreur réseau pendant la suppression."); }
+                    };
+                  } else {
+                    const claim = el(`<div class="comment-actions"><span class="tip">Auteur ? <span class="link">J'ai un code</span>.</span></div>`);
+                    claim.querySelector('.link').onclick = ()=>{
+                      const code = prompt("Code d'édition du commentaire :");
+                      if(!code) return;
+                      setToken("testimonial_comment_tokens", c.id, code);
+                      loadComments(id, target);
+                    };
+                    item.appendChild(claim);
+                  }
+
+                  // Replies
+                  const details = el(`<details class="replies"><summary>Réponses</summary></details>`);
+                  const repliesWrap = el(`<div class="vstack" style="margin-top:8px"></div>`);
+                  details.appendChild(repliesWrap);
+                  details.addEventListener('toggle', async ()=>{
+                    if(details.open && !details.dataset.loaded){
+                      await loadReplies(c.id, repliesWrap);
+                      details.dataset.loaded = '1';
+                    }
+                  });
+                  item.appendChild(details);
+
+                  const replyForm = el(`<div class="vstack" style="margin:8px 0 0 24px">
+                      <div class="hstack" style="gap:10px;flex-wrap:wrap"><input class="input r-name" placeholder="Nom complet" style="flex:1 1 240px"/></div>
+                      <textarea class="input r-body" rows="2" placeholder="Réponse..."></textarea>
+                      <div class="hstack"><button class="btn r-post">Répondre</button></div>
+                    </div>`);
+                  replyForm.querySelector('.r-post').onclick = async ()=>{
+                    const author = replyForm.querySelector('.r-name').value.trim();
+                    const body   = replyForm.querySelector('.r-body').value.trim();
+                    if(!author || !body) return alert('Nom et réponse requis.');
+                    try{
+                      const resp = await fetch(API.replyCreate, {
+                        method:'POST', headers:{'Content-Type':'application/json'},
+                        body: JSON.stringify({ comment_id: c.id, author_name: author, body })
+                      });
+                      const out = await resp.json();
+                      if(!resp.ok){ alert(out.error || 'Erreur'); return; }
+                      if(out.token && out.reply && out.reply.id){
+                        setToken("testimonial_reply_tokens", out.reply.id, out.token);
+                        try{ await navigator.clipboard.writeText(out.token); }catch{}
+                        alert("Code d'édition (réponse) copié :\n" + out.token);
+                      }
+                      replyForm.querySelector('.r-name').value='';
+                      replyForm.querySelector('.r-body').value='';
+                      details.dataset.loaded=''; details.open=true;
+                      await loadReplies(c.id, repliesWrap);
+                    }catch(err){ alert('Échec de la publication de la réponse.'); }
+                  };
+                  item.appendChild(replyForm);
+
+                  target.appendChild(item);
+                }
+              }catch(err){
+                console.error(err);
+                target.innerHTML = '<div class="muted">Erreur de chargement des commentaires.</div>';
+              }
+            }
+
+            // Load replies
+            async function loadReplies(cid, target){
+              target.innerHTML = '<div class="muted">Chargement…</div>';
+              try{
+                const r = await fetch(API.replies(cid));
+                const data = await r.json();
+                target.innerHTML='';
+                if(!data.items || !data.items.length){
+                  target.appendChild(el('<div class="muted">Aucune réponse.</div>'));
+                  return;
+                }
+                for(const rp of data.items){
+                  const row = el(`<div class="card" style="margin:0 0 8px 0;padding:10px"></div>`);
+                  const meta = el(`<div class="meta">
+                      <span class="flag">${flagEmoji(rp.country_code)}</span>
+                      <span>${escapeHtml(rp.author_name)}</span>
+                      <span>· ${escapeHtml([rp.city,rp.country].filter(Boolean).join(', '))}</span>
+                      <span>· ${formatTime(rp.created_at)}</span>
+                    </div>`);
+                  const body = el(`<div class="comment-body">${escapeHtml(rp.body)}</div>`);
+                  row.appendChild(meta); row.appendChild(body);
+
+                  const rtoken = getToken("testimonial_reply_tokens", rp.id);
+                  if (rtoken && !rp.deleted){
+                    const actions = el(`<div class="comment-actions"></div>`);
+                    const btnEdit = el(`<button class="btn small light">Modifier</button>`);
+                    const btnDelete = el(`<button class="btn small light">Supprimer</button>`);
+                    actions.appendChild(btnEdit); actions.appendChild(btnDelete);
+                    row.appendChild(actions);
+
+                    btnEdit.onclick = ()=>{
+                      const ta = el(`<textarea class="input" rows="2">${escapeHtml(rp.body)}</textarea>`);
+                      const bar = el(`<div class="hstack" style="gap:8px;margin-top:6px"></div>`);
+                      const btnSave = el(`<button class="btn small">Enregistrer</button>`);
+                      const btnCancel = el(`<button class="btn small light">Annuler</button>`);
+                      bar.appendChild(btnSave); bar.appendChild(btnCancel);
+                      row.replaceChild(ta, body);
+                      actions.style.display="none"; row.appendChild(bar);
+                      btnCancel.onclick = ()=>{ row.replaceChild(body, ta); actions.style.display=""; bar.remove(); };
+                      btnSave.onclick = async ()=>{
+                        const newBody = ta.value.trim(); if(!newBody) return alert("Réponse vide.");
+                        try{
+                          const resp = await fetch(API.replyUpdate(rp.id), {
+                            method:"PUT", headers:{"Content-Type":"application/json"},
+                            body: JSON.stringify({ token: rtoken, body: newBody })
+                          });
+                          const out = await resp.json();
+                          if(!resp.ok){ alert(out.error || "Échec de la mise à jour."); return; }
+                          await loadReplies(cid, target);
+                        }catch(e){ alert("Erreur réseau."); }
+                      };
+                    };
+
+                    btnDelete.onclick = async ()=>{
+                      if(!confirm("Supprimer cette réponse ?")) return;
+                      try{
+                        const resp = await fetch(API.replyDelete(rp.id), {
+                          method:"DELETE", headers:{"Content-Type":"application/json"},
+                          body: JSON.stringify({ token: rtoken })
+                        });
+                        const out = await resp.json().catch(()=>({}));
+                        if(!resp.ok){ alert(out.error || "Échec de la suppression."); return; }
+                        await loadReplies(cid, target);
+                      }catch(e){ alert("Erreur réseau."); }
+                    };
+                  } else {
+                    const claim = el(`<div class="comment-actions"><span class="tip">Auteur ? <span class="link">J'ai un code</span>.</span></div>`);
+                    claim.querySelector('.link').onclick = ()=>{
+                      const code = prompt("Code d'édition (réponse) :");
+                      if(!code) return;
+                      setToken("testimonial_reply_tokens", rp.id, code);
+                      loadReplies(cid, target);
+                    };
+                    row.appendChild(claim);
+                  }
+
+                  target.appendChild(row);
+                }
+              }catch(err){
+                console.error(err);
+                target.innerHTML = '<div class="muted">Erreur de chargement des réponses.</div>';
+              }
+            }
+
+            // Upload vidéo — stocke le token propriétaire si renvoyé par l'API
+            document.getElementById('btn-upload').onclick = async ()=>{
+              const author = document.getElementById('t-author').value.trim();
+              const title  = document.getElementById('t-title').value.trim();
+              const fileEl = document.getElementById('t-file');
+              const file   = fileEl.files[0];
+              if(!author || !title || !file) return alert('Remplis nom, titre et choisis une vidéo.');
+              if(file.size > 100 * 1024 * 1024) return alert('Fichier trop volumineux (100 Mo max).');
+              const fd = new FormData();
+              fd.append('author_name', author);
+              fd.append('title', title);
+              fd.append('file', file, file.name);
+              try{
+                const resp = await fetch(API.create, { method:'POST', body: fd });
+                const out = await resp.json().catch(()=>({}));
+                if(!resp.ok){ alert(out.error || 'Échec du téléversement.'); return; }
+                if(out.token && out.item && out.item.id){
+                  setToken("testimonial_tokens", out.item.id, out.token);
+                  try{ await navigator.clipboard.writeText(out.token); }catch{}
+                  alert("Code propriétaire copié :\n" + out.token);
+                }
+                document.getElementById('t-author').value='';
+                document.getElementById('t-title').value='';
+                fileEl.value='';
+                await loadItems(1, '', document.getElementById('sort').value);
+                window.scrollTo({top:0, behavior:'smooth'});
+              }catch(err){
+                alert('Échec réseau pendant l’envoi.');
+                console.error(err);
+              }
+            };
+
+            // Boot
+            const urlp = new URLSearchParams(location.search);
+            const p = parseInt(urlp.get("p")||"1",10);
+            const q = urlp.get("q")||"";
+            const s = (urlp.get("sort")||"recent");
+            document.getElementById("q").value = q;
+            document.getElementById("sort").value = s;
+            currentQuery=q; currentSort=s;
+
+            const doSearch = ()=>{ const nq = document.getElementById("q").value.trim(); loadItems(1, nq, document.getElementById("sort").value); };
+            const doClear = ()=>{ document.getElementById("q").value = ""; loadItems(1, "", document.getElementById("sort").value); };
+            document.getElementById("btn-search").onclick = doSearch;
+            document.getElementById("btn-clear").onclick = doClear;
+            document.getElementById("q").addEventListener("keydown", e=>{ if(e.key === "Enter") doSearch(); if(e.key === "Escape") doClear(); });
+            document.getElementById("sort").addEventListener("change", ()=>{ loadItems(1, document.getElementById("q").value.trim(), document.getElementById("sort").value); });
+
+            loadItems(isNaN(p)?1:p, q, s);
+        </script>
+        
+{% endblock %}

@@ -1,0 +1,418 @@
+{% extends "base_2.html" %}
+
+{% block content %}
+
+        <style>
+            body{background:#f7f7fb}
+            .container{max-width:900px;margin:0 auto;padding:16px}
+            .card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin-bottom:16px}
+            .muted{color:#6b7280;font-size:.9rem}
+            .hstack{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+            .vstack{display:flex;gap:8px;flex-direction:column}
+            .btn{border:1px solid #e5e7eb;border-radius:10px;padding:6px 10px;background:#111827;color:#fff;cursor:pointer}
+            .btn.light{background:#fff;color:#111827}
+            .btn.small{padding:4px 8px;font-size:.85rem;border-radius:8px}
+            .btn.danger{background:#b91c1c}
+            .input, textarea{border:1px solid #e5e7eb;border-radius:10px;padding:8px;width:100%}
+            .title{font-weight:700;font-size:1.3rem}
+            .meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.9rem;color:#6b7280}
+            .flag{font-size:1.1rem}
+            .video-box{border:1px solid #e5e7eb;border-radius:12px;padding:8px;background:#000}
+            .link{color:#2563eb;text-decoration:none;cursor:pointer}
+            .link:hover{text-decoration:underline}
+            .comment-actions{display:flex;gap:8px;align-items:center;margin-top:6px}
+            .comment-body{white-space:pre-wrap}
+            .owner-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+            .tip{font-size:.85rem;color:#6b7280}
+            .replies{margin-left:24px;border-left:3px solid #e5e7eb;padding-left:12px}
+            details summary{cursor:pointer; user-select:none}
+        </style>
+
+        <a class="link" href="temoignages.html">← Retour à la liste</a>
+
+        <div class="container">
+          <div id="card" class="card vstack">
+            <div class="title" id="t-title">Chargement…</div>
+            <div class="meta" id="t-meta"></div>
+            <div class="owner-actions" id="t-owner-actions"></div>
+            <div class="tip" id="t-owner-tip"></div>
+            <div class="video-box">
+              <video id="t-video" controls preload="metadata" style="width:100%;max-height:65vh;border-radius:8px;background:#000">
+                Votre navigateur ne supporte pas la vidéo HTML5.
+              </video>
+            </div>
+          </div>
+
+        <div class="card vstack">
+          <h3 style="margin:0">Commentaires</h3>
+          <div id="comments"></div>
+          <div class="vstack" style="margin-top:8px">
+            <div class="hstack" style="gap:10px;flex-wrap:wrap"><input id="c-author" class="input" placeholder="Nom complet" style="flex:1 1 240px"/></div>
+            <textarea id="c-body" class="input" rows="3" placeholder="Commentaire..."></textarea>
+            <div class="hstack"><button id="c-post" class="btn">Publier le commentaire</button></div>
+          </div>
+        </div>
+      </div><br><br><br>
+
+      <script>
+      // -------------- API --------------
+      const API = {
+        get: id => `/api/testimonials/${id}`,
+        update: id => `/api/testimonials/${id}`, // PUT {token, title?}
+        delete: id => `/api/testimonials/${id}`, // DELETE {token}
+        comments: id => `/api/testimonials/${id}/comments`,
+        commentCreate: '/api/testimonials/comments',         // POST (retourne token)
+        commentUpdate: id => `/api/testimonials/comments/${id}`, // PUT
+        commentDelete: id => `/api/testimonials/comments/${id}`,  // DELETE
+
+        // replies
+        replies: cid => `/api/testimonials/comments/${cid}/replies`,
+        replyCreate: '/api/testimonials/replies',                 // POST
+        replyUpdate: rid => `/api/testimonials/replies/${rid}`,   // PUT
+        replyDelete: rid => `/api/testimonials/replies/${rid}`    // DELETE
+      };
+
+      // -------------- Helpers --------------
+      function flagEmoji(cc){ if(!cc) return ''; cc=cc.toUpperCase(); return cc.replace(/./g,c=>String.fromCodePoint(127397+c.charCodeAt(0))); }
+      function formatTime(iso){ try{ return new Date(iso).toLocaleString(); }catch{ return iso; } }
+      function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;', "'":'&#39;'}[c])); }
+      function el(html){ const t=document.createElement('template'); t.innerHTML=html.trim(); return t.content.firstChild; }
+
+      // Tokens (localStorage)
+      const TOK_COMMENT = "testimonial_comment_tokens";
+      const TOK_TESTIM  = "testimonial_tokens";
+      const TOK_REPLY   = "testimonial_reply_tokens";
+      function getMap(key){ try{ return JSON.parse(localStorage.getItem(key) || "{}"); }catch{ return {}; } }
+      function setMap(key, m){ localStorage.setItem(key, JSON.stringify(m)); }
+      function getToken(mapKey, id){ return getMap(mapKey)[String(id)] || ""; }
+      function setToken(mapKey, id, token){ const m=getMap(mapKey); m[String(id)]=token; setMap(mapKey, m); }
+
+      function getId(){
+        const id = parseInt(new URLSearchParams(location.search).get("id")||"", 10);
+        if(!id || isNaN(id)) return null;
+        return id;
+      }
+
+      // -------------- Render testimonial --------------
+      async function loadTestimonial(id){
+        const r = await fetch(API.get(id));
+        if(!r.ok){ document.getElementById('t-title').textContent = "Introuvable"; return; }
+        const t = await r.json();
+
+        document.getElementById('t-title').textContent = t.title;
+        document.getElementById('t-meta').innerHTML = `
+          <span class="flag">${flagEmoji(t.country_code)}</span>
+          <span>${escapeHtml(t.author_name)}</span>
+          <span>· ${escapeHtml([t.city,t.country].filter(Boolean).join(', '))}</span>
+          <span>· ${formatTime(t.created_at)}</span>
+        `;
+
+        renderOwnerActions(id);
+
+        const video = document.getElementById('t-video');
+        video.innerHTML = "";
+        const src = document.createElement('source');
+        src.src = t.video_url || "";
+        src.type = t.mime_type || "video/mp4";
+        video.appendChild(src);
+        video.load();
+
+        await loadComments(id);
+      }
+
+      // owner actions (edit title / delete) if token present or allow claim
+      function renderOwnerActions(id){
+        const box = document.getElementById('t-owner-actions');
+        const tip = document.getElementById('t-owner-tip');
+        box.innerHTML=''; tip.textContent='';
+        const tok = getToken(TOK_TESTIM, id);
+        if(tok){
+          const btnEdit = el(`<button class="btn small light">Modifier le titre</button>`);
+          const btnDel  = el(`<button class="btn small danger">Supprimer le témoignage</button>`);
+          box.appendChild(btnEdit); box.appendChild(btnDel);
+          btnEdit.onclick = async ()=>{
+            const nv = prompt("Nouveau titre :");
+            if(!nv) return;
+            try{
+              const resp = await fetch(API.update(id), {method:"PUT", headers:{"Content-Type":"application/json"}, body: JSON.stringify({token: tok, title: nv})});
+              const out = await resp.json();
+              if(!resp.ok){ alert(out.error || "Échec de la mise à jour."); return; }
+              document.getElementById('t-title').textContent = out.item?.title || nv;
+            }catch(e){ alert("Erreur réseau."); }
+          };
+          btnDel.onclick = async ()=>{
+            if(!confirm("Supprimer ce témoignage ?")) return;
+            try{
+              const resp = await fetch(API.delete(id), {method:"DELETE", headers:{"Content-Type":"application/json"}, body: JSON.stringify({token: tok})});
+              const out = await resp.json().catch(()=>({}));
+              if(!resp.ok){ alert(out.error || "Échec de la suppression."); return; }
+              location.href = "temoignages.html";
+            }catch(e){ alert("Erreur réseau."); }
+          };
+        }else{
+          const a = el(`<span class="tip">Propriétaire ? <span class="link">J'ai un code</span> pour gérer ce témoignage.</span>`);
+          a.querySelector('.link').onclick = ()=>{
+            const code = prompt("Entre le code propriétaire :");
+            if(!code) return;
+            setToken(TOK_TESTIM, id, code);
+            renderOwnerActions(id);
+          };
+          tip.appendChild(a);
+        }
+      }
+
+      // -------------- Render comments + replies --------------
+      async function loadComments(id){
+        const box = document.getElementById('comments');
+        box.innerHTML = '<div class="muted">Chargement…</div>';
+        try{
+          const r = await fetch(API.comments(id));
+          const data = await r.json();
+          box.innerHTML='';
+          if(!data.items || !data.items.length){
+            box.appendChild(el('<div class="muted">Aucun commentaire pour le moment.</div>'));
+            return;
+          }
+          for(const c of data.items){
+            const item = el(`<div class="card" style="margin:8px 0;padding:10px"></div>`);
+            const meta = el(`<div class="meta">
+                <span class="flag">${flagEmoji(c.country_code)}</span>
+                <span>${escapeHtml(c.author_name)}</span>
+                <span>· ${escapeHtml([c.city,c.country].filter(Boolean).join(', '))}</span>
+                <span>· ${formatTime(c.created_at)}</span>
+              </div>`);
+            const body = el(`<div class="comment-body">${escapeHtml(c.body)}</div>`);
+            item.appendChild(meta);
+            item.appendChild(body);
+
+      // Edit/Delete for comment
+      const ctoken = getToken(TOK_COMMENT, c.id);
+      if (ctoken && !c.deleted){
+        const actions = el(`<div class="comment-actions"></div>`);
+        const btnEdit = el(`<button class="btn small light">Modifier</button>`);
+        const btnDelete = el(`<button class="btn small light">Supprimer</button>`);
+        actions.appendChild(btnEdit); actions.appendChild(btnDelete);
+        item.appendChild(actions);
+
+        btnEdit.onclick = ()=>{
+          const ta = el(`<textarea class="input" rows="3">${escapeHtml(c.body)}</textarea>`);
+          const row = el(`<div class="hstack" style="gap:8px;margin-top:6px"></div>`);
+          const btnSave = el(`<button class="btn small">Enregistrer</button>`);
+          const btnCancel = el(`<button class="btn small light">Annuler</button>`);
+          row.appendChild(btnSave); row.appendChild(btnCancel);
+          item.replaceChild(ta, body);
+          actions.style.display = "none";
+          item.appendChild(row);
+          btnCancel.onclick = ()=>{ item.replaceChild(body, ta); actions.style.display=""; row.remove(); };
+          btnSave.onclick = async ()=>{
+            const newBody = ta.value.trim();
+            if(!newBody) return alert("Le commentaire ne peut pas être vide.");
+            try{
+              const resp = await fetch(API.commentUpdate(c.id), {
+                method: "PUT", headers: {"Content-Type":"application/json"},
+                body: JSON.stringify({ token: ctoken, body: newBody })
+              });
+              const out = await resp.json();
+              if(!resp.ok){ alert(out.error || "Échec de la mise à jour."); return; }
+              await loadComments(id);
+            }catch(err){ alert("Erreur réseau pendant la mise à jour."); }
+          };
+        };
+
+        btnDelete.onclick = async ()=>{
+          if(!confirm("Supprimer ce commentaire ?")) return;
+          try{
+            const resp = await fetch(API.commentDelete(c.id), {
+              method: "DELETE", headers: {"Content-Type":"application/json"},
+              body: JSON.stringify({ token: ctoken })
+            });
+            const out = await resp.json().catch(()=>({}));
+            if(!resp.ok){ alert(out.error || "Échec de la suppression."); return; }
+            await loadComments(id);
+          }catch(err){ alert("Erreur réseau pendant la suppression."); }
+        };
+      } else {
+        const claim = el(`<div class="comment-actions"><span class="tip">Auteur ? <span class="link">J'ai un code</span>.</span></div>`);
+        claim.querySelector('.link').onclick = ()=>{
+          const code = prompt("Code d'édition du commentaire :");
+          if(!code) return;
+          setToken(TOK_COMMENT, c.id, code);
+          loadComments(id);
+        };
+        item.appendChild(claim);
+      }
+
+      // Replies block
+      const details = el(`<details class="replies"><summary>Réponses</summary></details>`);
+      const repliesWrap = el(`<div class="vstack" style="margin-top:8px"></div>`);
+      details.appendChild(repliesWrap);
+      details.addEventListener('toggle', async ()=>{
+        if(details.open && !details.dataset.loaded){
+          await loadReplies(c.id, repliesWrap);
+          details.dataset.loaded = '1';
+        }
+      });
+      item.appendChild(details);
+
+          // Reply form
+          const replyForm = el(`<div class="vstack" style="margin:8px 0 0 24px">
+              <div class="hstack" style="gap:10px;flex-wrap:wrap"><input class="input r-name" placeholder="Nom complet" style="flex:1 1 240px"/></div>
+              <textarea class="input r-body" rows="2" placeholder="Réponse..."></textarea>
+              <div class="hstack"><button class="btn r-post">Répondre</button></div>
+            </div>`);
+          replyForm.querySelector('.r-post').onclick = async ()=>{
+            const author = replyForm.querySelector('.r-name').value.trim();
+            const body   = replyForm.querySelector('.r-body').value.trim();
+            if(!author || !body) return alert('Nom et réponse requis.');
+            try{
+              const resp = await fetch(API.replyCreate, {
+                method:'POST', headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({ comment_id: c.id, author_name: author, body })
+              });
+              const out = await resp.json();
+              if(!resp.ok){ alert(out.error || 'Erreur'); return; }
+              if(out.token && out.reply && out.reply.id){
+                setToken(TOK_REPLY, out.reply.id, out.token);
+                try{ await navigator.clipboard.writeText(out.token); }catch{}
+                alert("Code d'édition (réponse) copié :\n" + out.token);
+              }
+              replyForm.querySelector('.r-name').value='';
+              replyForm.querySelector('.r-body').value='';
+              details.dataset.loaded = ''; details.open = true;
+              await loadReplies(c.id, repliesWrap);
+            }catch(err){ alert('Échec de la publication de la réponse.'); }
+          };
+          item.appendChild(replyForm);
+
+          box.appendChild(item);
+        }
+      }catch(err){
+        console.error(err);
+        box.innerHTML = '<div class="muted">Erreur de chargement des commentaires.</div>';
+      }
+    }
+
+      // Load replies for a comment
+      async function loadReplies(cid, target){
+        target.innerHTML = '<div class="muted">Chargement…</div>';
+        try{
+          const r = await fetch(API.replies(cid));
+          const data = await r.json();
+          target.innerHTML='';
+          if(!data.items || !data.items.length){
+            target.appendChild(el('<div class="muted">Aucune réponse.</div>'));
+            return;
+          }
+          for(const rp of data.items){
+            const row = el(`<div class="card" style="margin:0 0 8px 0;padding:10px"></div>`);
+            const meta = el(`<div class="meta">
+                <span class="flag">${flagEmoji(rp.country_code)}</span>
+                <span>${escapeHtml(rp.author_name)}</span>
+                <span>· ${escapeHtml([rp.city,rp.country].filter(Boolean).join(', '))}</span>
+                <span>· ${formatTime(rp.created_at)}</span>
+              </div>`);
+            const body = el(`<div class="comment-body">${escapeHtml(rp.body)}</div>`);
+            row.appendChild(meta); row.appendChild(body);
+
+            const rtoken = getToken(TOK_REPLY, rp.id);
+            if (rtoken && !rp.deleted){
+              const actions = el(`<div class="comment-actions"></div>`);
+              const btnEdit = el(`<button class="btn small light">Modifier</button>`);
+              const btnDelete = el(`<button class="btn small light">Supprimer</button>`);
+              actions.appendChild(btnEdit); actions.appendChild(btnDelete);
+              row.appendChild(actions);
+
+              btnEdit.onclick = ()=>{
+                const ta = el(`<textarea class="input" rows="2">${escapeHtml(rp.body)}</textarea>`);
+                const bar = el(`<div class="hstack" style="gap:8px;margin-top:6px"></div>`);
+                const btnSave = el(`<button class="btn small">Enregistrer</button>`);
+                const btnCancel = el(`<button class="btn small light">Annuler</button>`);
+                bar.appendChild(btnSave); bar.appendChild(btnCancel);
+                row.replaceChild(ta, body);
+                actions.style.display="none"; row.appendChild(bar);
+                btnCancel.onclick = ()=>{ row.replaceChild(body, ta); actions.style.display=""; bar.remove(); };
+                btnSave.onclick = async ()=>{
+                  const newBody = ta.value.trim(); if(!newBody) return alert("Réponse vide.");
+                  try{
+                    const resp = await fetch(API.replyUpdate(rp.id), {
+                      method:"PUT", headers:{"Content-Type":"application/json"},
+                      body: JSON.stringify({ token: rtoken, body: newBody })
+                    });
+                    const out = await resp.json();
+                    if(!resp.ok){ alert(out.error || "Échec de la mise à jour."); return; }
+                    await loadReplies(cid, target);
+                  }catch(e){ alert("Erreur réseau."); }
+                };
+              };
+
+              btnDelete.onclick = async ()=>{
+                if(!confirm("Supprimer cette réponse ?")) return;
+                try{
+                  const resp = await fetch(API.replyDelete(rp.id), {
+                    method:"DELETE", headers:{"Content-Type":"application/json"},
+                    body: JSON.stringify({ token: rtoken })
+                  });
+                  const out = await resp.json().catch(()=>({}));
+                  if(!resp.ok){ alert(out.error || "Échec de la suppression."); return; }
+                  await loadReplies(cid, target);
+                }catch(e){ alert("Erreur réseau."); }
+              };
+            } else {
+              const claim = el(`<div class="comment-actions"><span class="tip">Auteur ? <span class="link">J'ai un code</span>.</span></div>`);
+              claim.querySelector('.link').onclick = ()=>{
+                const code = prompt("Code d'édition (réponse) :");
+                if(!code) return;
+                setToken(TOK_REPLY, rp.id, code);
+                loadReplies(cid, target);
+              };
+              row.appendChild(claim);
+            }
+
+            target.appendChild(row);
+          }
+        }catch(err){
+          console.error(err);
+          target.innerHTML = '<div class="muted">Erreur de chargement des réponses.</div>';
+        }
+      }
+
+      // -------------- Create comment --------------
+      document.getElementById('c-post').onclick = async ()=>{
+        const id = getId();
+        if(!id) return alert("Identifiant manquant.");
+        const author = document.getElementById('c-author').value.trim();
+        const body = document.getElementById('c-body').value.trim();
+        if(!author || !body) return alert('Nom et commentaire requis.');
+        try{
+          const resp = await fetch(API.commentCreate, {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ testimonial_id: id, author_name: author, body })
+          });
+          const out = await resp.json();
+          if(!resp.ok){ alert(out.error || 'Erreur'); return; }
+          if(out.token && out.comment && out.comment.id){
+            setToken(TOK_COMMENT, out.comment.id, out.token);
+            try{ await navigator.clipboard.writeText(out.token); }catch{}
+            alert("Code d'édition copié :\n" + out.token);
+          }
+          document.getElementById('c-author').value='';
+          document.getElementById('c-body').value='';
+          await loadComments(id);
+        }catch(err){
+          alert('Échec de la publication du commentaire.');
+          console.error(err);
+        }
+      };
+
+      // -------------- Boot --------------
+      const id = getId();
+      if(!id){
+        document.getElementById('t-title').textContent = "Identifiant manquant";
+      } else {
+        loadTestimonial(id);
+      }
+      </script>
+
+{% endblock %}
+

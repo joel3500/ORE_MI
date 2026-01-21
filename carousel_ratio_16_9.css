@@ -1,0 +1,51 @@
+/* =====================================================
+   CAROUSEL — RATIO 16:9 (mobile → desktop)
+   - Utilise aspect-ratio (modern browsers)
+   - Fallback pour anciens navigateurs via padding-top
+   - Écrase les hauteurs fixes précédentes
+   ===================================================== */
+
+/* --- Mode moderne : aspect-ratio --- */
+#myCarousel,
+.carousel {
+  aspect-ratio: 16 / 9;
+  height: auto !important;       /* écrase les anciennes hauteurs fixes */
+  overflow: hidden;
+}
+
+#myCarousel .carousel-inner,
+.carousel .carousel-inner {
+  height: 100% !important;
+}
+
+#myCarousel .item, #myCarousel .carousel-item,
+.carousel .item,  .carousel .carousel-item {
+  height: 100% !important;
+}
+
+#myCarousel img, .carousel img,
+#myCarousel .item > img, #myCarousel .carousel-item > img,
+.carousel .item > img,  .carousel .carousel-item > img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+  display: block !important;
+}
+
+/* --- Fallback si aspect-ratio indisponible --- */
+@supports not (aspect-ratio: 1 / 1) {
+  /* Variante automatique pour #myCarousel */
+  #myCarousel { position: relative; height: auto !important; }
+  #myCarousel::before { content:""; display:block; padding-top:56.25%; } /* 16:9 */
+  #myCarousel > .carousel-inner { position:absolute; inset:0; height: auto; }
+  #myCarousel .item, #myCarousel .carousel-item { height:100%; }
+  #myCarousel img { width:100% !important; height:100% !important; object-fit:cover !important; }
+
+  /* Variante générique: ajoutez la classe 'ratio16x9' à votre carousel si nécessaire */
+  .ratio16x9 { position: relative; height: auto !important; }
+  .ratio16x9::before { content:""; display:block; padding-top:56.25%; }
+  .ratio16x9 > .carousel-inner { position:absolute; inset:0; height:auto; }
+  .ratio16x9 .item, .ratio16x9 .carousel-item { height:100%; }
+  .ratio16x9 img { width:100% !important; height:100% !important; object-fit:cover !important; }
+}

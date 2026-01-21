@@ -1,0 +1,422 @@
+{% extends "base_2.html" %}
+
+{% block content %}
+
+  <style>
+      body{background:#f7f7fb}
+      .container{width:100%; margin:10px auto;padding:16px; background-color:#f1f1f1;; border-radius:10px; }
+      .card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin-bottom:16px}
+      .muted{color:#6b7280;font-size:.9rem}
+      .hstack{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+      .vstack{display:flex;gap:8px;flex-direction:column}
+      .btn{border:1px solid #e5e7eb;border-radius:10px;padding:6px 10px;background:#111827;color:#fff;cursor:pointer}
+      .btn.light{background:#fff;color:#111827}
+      .btn.disabled{opacity:.5;cursor:not-allowed}
+      .input, textarea{border:1px solid #e5e7eb;border-radius:10px;padding:8px;width:100%}
+      .topic-title{font-weight:600;font-size:1.05rem}
+      .meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.85rem;color:#6b7280}
+      .flag{font-size:1.1rem}
+      .link{color:#2563eb;text-decoration:none}
+      .link:hover{text-decoration:underline}
+      .footer-form{margin-top:24px}
+      .excerpt{color:#374151}
+      .pager{display:flex;align-items:center;justify-content:space-between;margin:8px 0}
+  </style>
+
+  <div class="sous_section"> ORE MI — Forum (Sujets) </div>
+
+  <div class="text-service-aide">
+      <div class="container">
+        <div class="card hstack" style="justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+          <div class="hstack" style="gap:8px;flex:1 1 420px">
+            <input id="q" class="input" placeholder="Rechercher (titre, énoncé, auteur)..." style="flex:1 1 320px"/>
+            <button id="btn-search" class="btn light">Rechercher</button>
+            <button id="btn-clear" class="btn light">Effacer</button>
+          </div>
+          <div class="hstack" style="gap:8px">
+            <label class="muted">Trier&nbsp;:</label>
+            <select id="sort" class="input" style="width:200px">
+              <option value="recent">Plus récents</option>
+              <option value="commented">Plus commentés</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="pager-top" class="pager"></div>
+        <div id="topics"></div>
+        <div id="pager-bottom" class="pager"></div>
+
+        <div class="card footer-form" id="newTopicBox">
+          <p class="sous_section">DÉMARRER UN SUJET</p>
+          <div class="vstack">
+            <div class="hstack" style="gap:10px;flex-wrap:wrap">
+              <input id="topic-author" class="input" placeholder="Nom complet" style="flex:1 1 240px"/>
+              <input id="topic-title" class="input" placeholder="Titre du sujet" style="flex:2 1 340px"/>
+            </div>
+            <textarea id="topic-body" class="input" rows="4" placeholder="Énoncé du sujet..."></textarea>
+            <div class="hstack">
+              <button id="btn-create-topic" class="btn">Publier le sujet</button>
+              <span class="muted">Reste courtois et précis</span>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <div id="newTopicLocked" style="display:none; padding:12px; border:1px dashed #aaa; border-radius:10px;">
+          🔒 Tu peux consulter tous les forums. Mais pour publier ou commenter, connectes-toi.
+      </div>
+  </div><br><br>
+
+  <div class="text-service-aide">
+      Rejoindre aussi d'autres Forums simulaires :
+      <ul>
+        <li>Habitat : Un Site qui te permettra de te trouver une chambre èa louer, ou inversement des Locataires selon tes Goûts. Nous utililisons des algorithmes pour matcher les gens selon leurs habitudes de vie. ( bientot disponible )</li>
+        <li>Forum des Passionnés de l'Entreprenariat : Partage, Échange entre personnes mordus de l'entreprenariat. ( bientot disponible )</li>
+        <li>Espérance Saguenay : Tu as un projet que tu veux réaliser ? Sky is the LIMIT. ( bientot disponible )</li>
+      </ul>
+      Vous connaissez des liens vers des Forums interessants pour les Étudiants ? envoyez nous les liens à oremi.joel@gmail.com pour que je les ajoute à cette Liste.
+  </div><br><br>
+
+  <div class="text-service-aide">
+      <section id="authBox" style="border:1px solid #ddd; padding:12px; border-radius:10px; margin-bottom:16px;">
+            <div id="authStatus" style="margin-bottom:10px;">Chargement…</div>
+
+            <div id="authForms" style="display:flex; gap:18px; flex-wrap:wrap;">
+              <!-- Register -->
+              <div id="inscription" style="min-width:260px;">
+                <h4 style="margin:0 0 8px 0;">Inscription</h4>
+                <input id="regFirst" placeholder="Prénom" style="width:100%; margin:4px 0;">
+                <input id="regLast" placeholder="Nom" style="width:100%; margin:4px 0;">
+                <input id="regEmail" placeholder="Email" style="width:100%; margin:4px 0;">
+                <input id="regCity" placeholder="Ville" style="width:100%; margin:4px 0;">
+                <input id="regPwd" type="password" placeholder="Mot de passe" style="width:100%; margin:4px 0;">
+                <button id="btnRegister" style="margin-top:6px;">Créer le compte</button>
+                <div id="regMsg" style="font-size:0.9em; margin-top:6px;"></div>
+              </div>
+
+              <!-- Verify -->
+              <div id="validation" style="min-width:260px;">
+                <h4 style="margin:0 0 8px 0;">Valider l’email</h4>
+                <input id="verEmail" placeholder="Email" style="width:100%; margin:4px 0;">
+                <input id="verCode" placeholder="Code (5 digits)" style="width:100%; margin:4px 0;">
+                <button id="btnVerify" style="margin-top:6px;">Valider</button>
+                <div id="verMsg" style="font-size:0.9em; margin-top:6px;"></div>
+              </div>
+
+              <!-- Login -->
+              <div style="min-width:260px;">
+                <h4 style="margin:0 0 8px 0;">Connexion</h4>
+                <input id="logEmail" placeholder="Email" style="width:100%; margin:4px 0;">
+                <input id="logPwd" type="password" placeholder="Mot de passe" style="width:100%; margin:4px 0;">
+                <button id="btnLogin" style="margin-top:6px;">Se connecter</button>
+                <button id="btnLogout" style="margin-top:6px; display:none;">Se déconnecter</button>
+                <div id="logMsg" style="font-size:0.9em; margin-top:6px;"></div>
+              </div>
+            </div>
+      </section>
+  </div><br><br><br>
+
+      <script>
+          const API = {
+            list:   (p, s, q, sort) => `/api/forum/topics?page=${p}&page_size=${s}` + (q?`&q=${encodeURIComponent(q)}`:'') + (sort?`&sort=${encodeURIComponent(sort)}`:''),
+            create: '/api/forum/topics'
+          };
+          const PAGE_SIZE = 10;
+          let currentPage = 1;
+          let currentQuery = '';
+          let currentSort = 'recent';
+
+          function flagEmoji(cc){ if(!cc) return ''; cc=cc.toUpperCase(); return cc.replace(/./g,c=>String.fromCodePoint(127397+c.charCodeAt(0))); }
+          function formatTime(iso){ try{ return new Date(iso).toLocaleString(); }catch{ return iso; } }
+          function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;', "'":'&#39;'}[c])); }
+          let GEO_CACHE=null;
+          async function getGeo(){ 
+            if(GEO_CACHE) 
+                return GEO_CACHE; 
+            try{ const r=await fetch('https://ipapi.co/json/'); 
+                 const j=await r.json(); 
+                 GEO_CACHE={city:j.city||'',
+                       country:j.country_name||'',
+                       country_code:(j.country_code||'').toUpperCase()}; 
+                }catch(e){ 
+                    GEO_CACHE={city:'', country:'', country_code:''}; 
+                }   return GEO_CACHE; 
+          }
+          function el(html){ const t=document.createElement('template'); t.innerHTML=html.trim(); return t.content.firstChild; }
+          function excerpt(txt,max=200){ txt=txt||''; return txt.length>max? txt.slice(0,max-1)+'…' : txt; }
+
+          function setURL(page){
+            const params=new URLSearchParams();
+            if(page>1) params.set("p",page);
+            if(currentQuery) params.set("q",currentQuery);
+            if(currentSort && currentSort!=="recent") params.set("sort",currentSort);
+            const qs=params.toString();
+            history.replaceState(null,"", qs?`?${qs}`:location.pathname);
+          }
+
+          function renderPager(target, meta){
+            const {page, total_pages, has_prev, has_next, total} = meta;
+            const node = el(`<div class="hstack" style="width:100%"></div>`);
+            const left = el(`<div class="muted">Page ${page} / ${total_pages} — ${total} sujet(s)</div>`);
+            const right = el(`<div class="hstack" style="gap:8px"></div>`);
+            const prev = el(`<button class="btn light ${has_prev?'':'disabled'}">← Précédent</button>`);
+            const next = el(`<button class="btn light ${has_next?'':'disabled'}">Suivant →</button>`);
+            prev.onclick = ()=>{ if(has_prev) loadTopics(page-1); };
+            next.onclick = ()=>{ if(has_next) loadTopics(page+1); };
+            right.appendChild(prev); right.appendChild(next);
+            node.appendChild(left); node.appendChild(right);
+            target.innerHTML=''; target.appendChild(node);
+          }
+
+          async function loadTopics(page=1, q=currentQuery, sort=currentSort){
+            currentPage = page; currentQuery = q; currentSort = sort; setURL(page);
+            const r = await fetch(API.list(page, PAGE_SIZE, currentQuery, currentSort));
+            const data = await r.json();
+
+            const pagerTop = document.getElementById('pager-top');
+            const pagerBottom = document.getElementById('pager-bottom');
+            const box = document.getElementById('topics');
+            box.innerHTML='';
+
+            if(!data.items || !data.items.length){
+              box.appendChild(el(`<div class="card muted">Aucun sujet — essaie d'autres mots-clés</div>`));
+              pagerTop.innerHTML=''; pagerBottom.innerHTML='';
+              return;
+            }
+
+            document.getElementById("q").value = (currentQuery||"");
+            document.getElementById("sort").value = (currentSort||"recent");
+            renderPager(pagerTop, data);
+
+            for(const t of data.items){
+              const link = `topic.html?id=${t.id}`;
+              const node = el(`<div class="card vstack">
+                  <div class="topic-title"><a class="link" href="${link}">${escapeHtml(t.title)}</a></div>
+                  <div class="meta">
+                    <span class="flag">${flagEmoji(t.country_code)}</span>
+                    <span>${escapeHtml(t.author_name)}</span>
+                    <span>· ${escapeHtml([t.city,t.country].filter(Boolean).join(', '))}</span>
+                    <span>· ${formatTime(t.created_at)}</span>
+                    <span>· ${t.comment_count} commentaire(s)</span>
+                  </div>
+                  <div class="excerpt">${escapeHtml(excerpt(t.body))}</div>
+                  <div><a class="link" href="${link}">Ouvrir le sujet →</a></div>
+                </div>`);
+              box.appendChild(node);
+            }
+
+            renderPager(pagerBottom, data);
+          }
+
+          // Create topic
+          document.getElementById('btn-create-topic').onclick = async () => {
+            const title = document.getElementById('topic-title').value.trim();
+            const body  = document.getElementById('topic-body').value.trim();
+
+            if (!title || !body) return alert('Remplis le titre et énoncé.');
+
+            const geo = await getGeo(); // doit retourner {city, country, country_code}
+
+            try {
+              const resp = await fetch(API.create, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, body, ...geo })
+              });
+
+              const out = await resp.json().catch(() => ({}));
+              if (!resp.ok) {
+                alert(out.error || `Erreur HTTP ${resp.status}`);
+                console.log('Réponse serveur:', out);
+                return;
+              }
+
+              document.getElementById('topic-title').value = '';
+              document.getElementById('topic-body').value = '';
+              await loadTopics(1, '', document.getElementById('sort').value);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            } catch (err) {
+              alert('Échec de la publication (réseau). Regarde la console.');
+              console.error('Fetch error:', err);
+            }
+          };
+
+          // Boot with URL state
+          const urlp = new URLSearchParams(location.search);
+          const p = parseInt(urlp.get("p")||"1",10);
+          const q = urlp.get("q")||"";
+          const s = (urlp.get("sort")||"recent");
+          document.getElementById("q").value = q;
+          document.getElementById("sort").value = s;
+          currentQuery=q; currentSort=s;
+
+          // Events: search + sort
+          const doSearch = ()=>{ const nq = document.getElementById("q").value.trim(); loadTopics(1, nq, document.getElementById("sort").value); };
+          const doClear = ()=>{ document.getElementById("q").value = ""; loadTopics(1, "", document.getElementById("sort").value); };
+          document.getElementById("btn-search").onclick = doSearch;
+          document.getElementById("btn-clear").onclick = doClear;
+          document.getElementById("q").addEventListener("keydown", e=>{ if(e.key === "Enter") doSearch(); if(e.key === "Escape") doClear(); });
+          document.getElementById("sort").addEventListener("change", ()=>{ loadTopics(1, document.getElementById("q").value.trim(), document.getElementById("sort").value); });
+
+          loadTopics(isNaN(p)?1:p, q, s);
+      </script>    
+
+      <script>
+          let ME = null;
+
+          async function api(path, method="GET", body=null) {
+            const opts = { method, headers: {} };
+            if (body) {
+              opts.headers["Content-Type"] = "application/json";
+              opts.body = JSON.stringify(body);
+            }
+            const r = await fetch(path, opts);
+            const data = await r.json().catch(() => ({}));
+            if (!r.ok) throw new Error(data.error || ("HTTP " + r.status));
+            return data;
+          }
+
+          async function refreshMe() {
+            const data = await api("/api/auth/me");
+            ME = data.user;
+
+            const s = document.getElementById("authStatus");
+            const btnLogout = document.getElementById("btnLogout");
+
+            const boxInscription = document.getElementById("inscription");
+            const boxValidation  = document.getElementById("validation");
+
+            const authorInput = document.getElementById("topic-author");
+
+            if (!ME) {
+              s.textContent = "Tu peux consulter tous les forums. Mais pour intervenir tu dois te connecter.";
+              btnLogout.style.display = "none";
+
+              // Afficher inscription + validation
+              if (boxInscription) boxInscription.style.display = "block";
+              if (boxValidation)  boxValidation.style.display = "block";
+
+              // Author editable (vu qu'on ne connaît personne)
+              if (authorInput) {
+                authorInput.value = "";
+                authorInput.readOnly = false;
+                authorInput.disabled = false;
+              }
+
+              lockPosting(true);
+              return;
+            }
+
+            // connecté
+            s.textContent = `Connecté: ${ME.first_name} ${ME.last_name} — ${ME.email} — ` +
+                            (ME.is_verified ? "✅ email vérifié" : "⚠️ email non vérifié");
+            btnLogout.style.display = "inline-block";
+
+            // Cacher inscription + validation si l'utilisateur est vérifié
+            // (si tu veux les cacher même quand non vérifié, dis-le, je te donne la variante)
+            if (ME.is_verified) {
+              if (boxInscription) boxInscription.style.display = "none";
+              if (boxValidation)  boxValidation.style.display = "none";
+            } else {
+              if (boxInscription) boxInscription.style.display = "none"; // connecté => pas besoin inscription
+              if (boxValidation)  boxValidation.style.display = "block"; // pas vérifié => garder validation
+            }
+
+            // Pré-remplir le nom complet + rendre non éditable
+            if (authorInput) {
+              authorInput.value = `${ME.first_name} ${ME.last_name}`.trim();
+              authorInput.readOnly = true;     // non éditable
+              authorInput.style.background = "#f2f2f2";    // on le garde dans l'UI
+            }
+
+            lockPosting(!ME.is_verified);
+          }
+
+          function lockPosting(locked) {
+            const box = document.getElementById("newTopicBox");
+            const lock = document.getElementById("newTopicLocked");
+            if (!box || !lock) return;
+            box.style.display = locked ? "none" : "block";
+            lock.style.display = locked ? "block" : "none";
+          }
+
+          document.getElementById("btnRegister")?.addEventListener("click", async () => {
+            const payload = {
+              first_name: document.getElementById("regFirst").value.trim(),
+              last_name:  document.getElementById("regLast").value.trim(),
+              email:      document.getElementById("regEmail").value.trim(),
+              city:       document.getElementById("regCity").value.trim(),
+              password:   document.getElementById("regPwd").value.trim(),
+            };
+            const msg = document.getElementById("regMsg");
+            msg.textContent = "…";
+            try {
+              const data = await api("/api/auth/register", "POST", payload);
+              msg.textContent = data.message || "Code envoyé.";
+              // pratique: auto remplir email dans verify/login
+              document.getElementById("verEmail").value = payload.email;
+              document.getElementById("logEmail").value = payload.email;
+              
+              if (data.debug_code) {
+                msg.textContent += ` (DEV code: ${data.debug_code})`;
+                document.getElementById("verCode").value = data.debug_code;
+              }
+              
+            } catch (e) {
+              msg.textContent = "❌ " + e.message;
+            }
+          });
+
+          document.getElementById("btnVerify")?.addEventListener("click", async () => {
+            const payload = {
+              email: document.getElementById("verEmail").value.trim(),
+              code:  document.getElementById("verCode").value.trim(),
+            };
+            const msg = document.getElementById("verMsg");
+            msg.textContent = "…";
+            try {
+              await api("/api/auth/verify", "POST", payload);
+              msg.textContent = "✅ Email vérifié. Tu es connecté.";
+              await refreshMe();
+            } catch (e) {
+              msg.textContent = "❌ " + e.message;
+            }
+          });
+
+          document.getElementById("btnLogin")?.addEventListener("click", async () => {
+            const payload = {
+              email: document.getElementById("logEmail").value.trim(),
+              password: document.getElementById("logPwd").value.trim(),
+            };
+            const msg = document.getElementById("logMsg");
+            msg.textContent = "…";
+            try {
+              const data = await api("/api/auth/login", "POST", payload);
+              msg.textContent = data.is_verified ? "✅ Connecté." : " Connecté, mais email non vérifié.";
+              await refreshMe();
+            } catch (e) {
+              msg.textContent = " " + e.message + " reessayez un peu plus tard.";
+            }
+          });
+
+          document.getElementById("btnLogout")?.addEventListener("click", async () => {
+            const msg = document.getElementById("logMsg");
+            msg.textContent = "…";
+            try {
+              await api("/api/auth/logout", "POST", {});
+              msg.textContent = " Déconnecté.";
+              await refreshMe();
+            } catch (e) {
+              msg.textContent = " " + e.message;
+            }
+          });
+
+          // Au chargement
+          refreshMe().catch(() => {
+            document.getElementById("authStatus").textContent = "Erreur auth (backend pas prêt ?)";
+          });
+      </script>
+
+
+{% endblock %}

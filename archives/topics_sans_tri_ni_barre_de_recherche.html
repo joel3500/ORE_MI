@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forum — Liste des sujets</title>
+  <link rel="stylesheet" type="text/css" href="css/design_jardin_secret.css"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins|Sofia|Trirong|Audiowide">
+  <style>
+    body{background:#f7f7fb}
+    .container{max-width:1000px;margin:0 auto;padding:16px}
+    .card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin-bottom:16px}
+    .muted{color:#6b7280;font-size:.9rem}
+    .hstack{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .vstack{display:flex;gap:8px;flex-direction:column}
+    .btn{border:1px solid #e5e7eb;border-radius:10px;padding:6px 10px;background:#111827;color:#fff;cursor:pointer}
+    .btn.light{background:#fff;color:#111827}
+    .btn.disabled{opacity:.5;cursor:not-allowed}
+    .input, textarea{border:1px solid #e5e7eb;border-radius:10px;padding:8px;width:100%}
+    .topic-title{font-weight:600;font-size:1.05rem}
+    .meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.85rem;color:#6b7280}
+    .flag{font-size:1.1rem}
+    .link{color:#2563eb;text-decoration:none}
+    .link:hover{text-decoration:underline}
+    .footer-form{margin-top:24px}
+    .excerpt{color:#374151}
+    .pager{display:flex;align-items:center;justify-content:space-between;margin:8px 0}
+  </style>
+</head>
+<body>
+<header>
+  <div class="header-title">ORE MI — Forum (Sujets)</div>
+</header>
+
+<div class="container">
+  <div id="pager-top" class="pager"></div>
+  <div id="topics"></div>
+  <div id="pager-bottom" class="pager"></div>
+
+  <div class="card footer-form" id="new-topic">
+    <p class="sous_section">DÉMARRER UN SUJET</p>
+    <div class="vstack">
+      <div class="hstack" style="gap:10px;flex-wrap:wrap">
+        <input id="topic-author" class="input" placeholder="Nom complet" style="flex:1 1 240px"/>
+        <input id="topic-title" class="input" placeholder="Titre du sujet" style="flex:2 1 340px"/>
+      </div>
+      <textarea id="topic-body" class="input" rows="4" placeholder="Énoncé du sujet..."></textarea>
+      <div class="hstack">
+        <button id="btn-create-topic" class="btn">Publier le sujet</button>
+        <span class="muted">Reste courtois et précis ✨</span>
+      </div>
+    </div>
+  </div>
+</div> <br><br><br>
+
+<footer>
+  Venez visiter le site et surtout, n'oubliez pas de nous laisser vos commentaires pour pouvoir l'améliorer | Tous Droits Réservés |
+</footer>
+
+<script>
+const API = {
+  list:   (p, s) => `/api/forum/topics?page=${p}&page_size=${s}`,
+  create: '/api/forum/topics'
+};
+const PAGE_SIZE = 10;
+let currentPage = 1;
+
+function flagEmoji(cc){ if(!cc) return ''; cc=cc.toUpperCase(); return cc.replace(/./g,c=>String.fromCodePoint(127397+c.charCodeAt(0))); }
+function formatTime(iso){ try{ return new Date(iso).toLocaleString(); }catch{ return iso; } }
+function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;', "'":'&#39;'}[c])); }
+let GEO_CACHE=null;
+async function getGeo(){ if(GEO_CACHE) return GEO_CACHE; try{ const r=await fetch('https://ipapi.co/json/'); const j=await r.json(); GEO_CACHE={city:j.city||'',country:j.country_name||'',country_code:(j.country_code||'').toUpperCase()}; }catch(e){ GEO_CACHE={city:'',country:'',country_code:''}; } return GEO_CACHE; }
+function el(html){ const t=document.createElement('template'); t.innerHTML=html.trim(); return t.content.firstChild; }
+function excerpt(txt,max=200){ txt=txt||''; return txt.length>max? txt.slice(0,max-1)+'…' : txt; }
+
+function renderPager(target, meta){
+  const {page, total_pages, has_prev, has_next, total} = meta;
+  const node = el(`<div class="hstack" style="width:100%"></div>`);
+  const left = el(`<div class="muted">Page ${page} / ${total_pages} — ${total} sujet(s)</div>`);
+  const right = el(`<div class="hstack" style="gap:8px"></div>`);
+  const prev = el(`<button class="btn light ${has_prev?'':'disabled'}">← Précédent</button>`);
+  const next = el(`<button class="btn light ${has_next?'':'disabled'}">Suivant →</button>`);
+  prev.onclick = ()=>{ if(has_prev) loadTopics(page-1); };
+  next.onclick = ()=>{ if(has_next) loadTopics(page+1); };
+  right.appendChild(prev); right.appendChild(next);
+  node.appendChild(left); node.appendChild(right);
+  target.innerHTML=''; target.appendChild(node);
+}
+
+async function loadTopics(page=1){
+  currentPage = page;
+  const r = await fetch(API.list(page, PAGE_SIZE));
+  const data = await r.json();
+
+  const pagerTop = document.getElementById('pager-top');
+  const pagerBottom = document.getElementById('pager-bottom');
+  const box = document.getElementById('topics');
+  box.innerHTML='';
+
+  if(!data.items || !data.items.length){
+    box.appendChild(el(`<div class="card muted">Aucun sujet pour l'instant — sois le premier ✨</div>`));
+    pagerTop.innerHTML=''; pagerBottom.innerHTML='';
+    return;
+  }
+
+  renderPager(pagerTop, data);
+
+  for(const t of data.items){
+    const link = `topic.html?id=${t.id}`;
+    const node = el(`<div class="card vstack">
+        <div class="topic-title"><a class="link" href="${link}">${escapeHtml(t.title)}</a></div>
+        <div class="meta">
+          <span class="flag">${flagEmoji(t.country_code)}</span>
+          <span>${escapeHtml(t.author_name)}</span>
+          <span>· ${escapeHtml([t.city,t.country].filter(Boolean).join(', '))}</span>
+          <span>· ${formatTime(t.created_at)}</span>
+          <span>· ${t.comment_count} commentaire(s)</span>
+        </div>
+        <div class="excerpt">${escapeHtml(excerpt(t.body))}</div>
+        <div><a class="link" href="${link}">Ouvrir le sujet →</a></div>
+      </div>`);
+    box.appendChild(node);
+  }
+
+  renderPager(pagerBottom, data);
+}
+
+// Create topic
+document.getElementById('btn-create-topic').onclick = async ()=>{
+  const author = document.getElementById('topic-author').value.trim();
+  const title  = document.getElementById('topic-title').value.trim();
+  const body   = document.getElementById('topic-body').value.trim();
+  if(!author || !title || !body) return alert('Remplis nom, titre et énoncé.');
+  const geo = await getGeo();
+  try{
+    const resp = await fetch(API.create, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ author_name: author, title, body, ...geo }) });
+    const out = await resp.json();
+    if(!resp.ok){ alert(out.error || 'Erreur inconnue'); return; }
+    // Reset + recharger en page 1
+    document.getElementById('topic-author').value='';
+    document.getElementById('topic-title').value='';
+    document.getElementById('topic-body').value='';
+    await loadTopics(1);
+    window.scrollTo({top:0, behavior:'smooth'});
+  }catch(err){
+    alert('Échec de la publication (réseau). Regarde la console.');
+    console.error(err);
+  }
+};
+
+loadTopics();
+</script>
+</body>
+</html>

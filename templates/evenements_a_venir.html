@@ -1,0 +1,162 @@
+{% extends "base_2.html" %}
+
+{% block content %}
+        <style>
+            input, textarea
+            {
+                width : 50%;
+            }
+
+            button, ::file-selector-button
+            {
+                width : 50%;
+                height : 30px;
+                cursor : pointer;
+            }
+
+            input
+            {
+                height : 30px;
+            }
+
+            textarea
+            {
+                min-height : 100px;
+            }
+
+            @media only screen and (max-width : 780px) 
+            {
+                input, textarea, ::file-selector-button
+                {
+                    width : 100%;
+                }
+            }
+        </style>
+
+        <div class="text-service-aide">
+            <main class="events-container">
+                <p class="sous_section">LISTE DES ÉVÈNEMENTS</p>
+                <div id="events"></div>
+                
+                <!--
+                   <div class="actions" style="justify-content:center;margin:18px 0">
+                        <button id="loadMore" class="btn">Charger plus</button>
+                    </div> 
+                -->
+            </main>
+        </div><br><br>
+            
+        <hr><br>
+        
+        <div class="text-service-aide">
+            <b>Simulation du Conseil de sécurité des Nations unies à l’UQAC : le 16 Avril 2024 à 15h</b> <br> 
+            Des étudiantes et étudiants du DSHS mettent à l’épreuve leurs aptitudes diplomatiques. L'évenement aura lieu le 16 Avril 2024 à 15h. <br>
+            <a href="https://www.uqac.ca/uqactualites/2024/05/09/simulation-du-conseil-de-securite-des-nations-unies-a-luqac-des-etudiantes-et-etudiants-du-dshs-mettent-a-lepreuve-leurs-aptitudes-diplomatiques/" target="_blank">le lien pour plus d'informations</a>. <br><br>
+           	
+            <div class="cadre_video_interieur-text-service-aide">
+				<img src="img/evenements_a_venir/simulation_conseil_securite_1.png"/>
+			</div>
+        </div><br><br>
+
+
+		<div class="text-service-aide">
+            <b> Conférence Zoom sur L'Entrepreunariat : Le jeudi 26 janvier sur Zoom  </b> <br>
+            Ce jeudi 26 janvier a eu lieu sur Zoom, un midi-séminaire portant sur la pédagogie de l’entrepreneuriat. 
+            L’activité a été organisée par la Chaire d’excellence en enseignement et a reçu l’intervention du professeur 
+            Étienne Saint-Jean également directeur de l’institut de recherche sur les PME. Durant 45 minutes, 
+            il a traité de l’entrepreneuriat ainsi que sur les pédagogies expérentielles. <br>  
+            <a href="https://zonecampus.ca/midis-seminaires-sur-la-pedagogie-de-lentrepreneuriat/" target="_blank">le lien pour plus d'informations</a>. <br><br>
+			
+            <div class="cadre_video_interieur-text-service-aide">
+				<img src="img/evenements_a_venir/midi_seminaire_zoom_uqtr_etienne_st_jean.jpg"/>
+			</div>
+        </div><br><br>
+
+
+        <div class="text-service-aide">
+			<b> Soirée PIZZA au sous-sol de l'UQAC le mercredi 06 Déc 2023 </b> <br>
+			
+            Le terme : Enttend qu'étudiants international, comment bien rentabiliser 
+            sa période des fêtes de foin d'années. La soirée PIZZA, sera présidée par Kouamé Alain, Alias Alino. <br>
+            
+            <a href="#" target="_blank">le lien pour plus d'informations</a>
+			
+            <div class="cadre_video_interieur-text-service-aide">
+				<img src="img/evenements_a_venir/soiree_pizza_1.jpg" title="Soiree Pizza" allowfullscreen/>
+			</div>
+		</div><br><br>
+        
+
+        <div class="text-service-aide">
+			<b> Rencontre Bureau étudiants internationaux à Montréal le samedi 02 Déc à 12h00 </b> <br>
+            Ce samedi 02 Déc à 12h00 est prévue une rencontre des membres du bureau 
+            des étudiants internationaux de tous les établissements publics et privés, 
+            des universités et Cegep du Québec. <br>
+            
+            <a href="#" target="_blank">le lien pour plus d'informations</a>
+            
+            <div class="cadre_video_interieur-text-service-aide">
+				<img src="img/evenements_a_venir/rencontre_etudiants_internationaux_1.jpeg" allowfullscreen/>
+			</div>
+		</div><br><br>
+
+        <hr><br>
+
+        <p class="sous_section">AJOUTER UN NOUVEL ÉVÈNEMENT</p>
+        <div class="text-service-aide">
+            <main class="events-container">
+                <div class="form-card">
+                    <div class="column">
+                        <div>
+                            <label for="author_name">Nom complet</label> <br>
+                            <input id="author_name" type="text" placeholder="Ex: Aïcha Koné" required> <br><br>
+                        </div>
+
+                        <div>
+                            <label for="title">Titre de l'évènement</label><br>
+                            <input id="title" type="text" placeholder="Ex: Soirée pizza UQAC" required><br><br>
+                        </div>
+                    </div>
+
+                    <div class="column">
+                        <div>
+                            <label for="body">Description / commentaire</label> <br>
+                            <textarea id="body" placeholder="Quelques mots sur l'évènement (lieu, thème, infos pratiques, lien, etc.)"></textarea><br>
+                            <p class="small">Le site ajoutera automatiquement ta ville/pays et l'heure d'envoi.</p>
+                        </div>
+
+                        <div>
+                            <label for="media">Image ou vidéo (max ~24 Mo)</label>  <br>
+                            <input id="media" type="file" accept="image/*,video/*"> <br>
+                            <p class="small">Formats conseillés ( image ) : .jpg  .jpeg  .png  .gif  .webp  </p>
+                            <p class="small">Formats conseillés ( vidéo ) : .mp4  .webm  .ogg               </p> 
+                        </div>
+                    </div>
+
+                    <div class="actions">
+                        <button id="submitBtn" class="btn primary">Publier l'évènement</button> <br><br>
+                        <button id="resetBtn" class="btn">Effacer</button>
+                    </div>
+            </main>
+        </div><br><br>
+
+        <p class="sous_section">EN CAS DE PROBLÈME TECHNIQUE</p>
+
+        <div class="text-service-aide">
+            <b>Pour Ajouter un nouvel Évenement ( Partout dans le Québec ) : </b> <br> 
+            Si vous rencontrez des problèmes techniques pour publier, veuillez envoyer un email à <b>oremi.joel@gmail.com</b> dans lequel vous indiquerez : <br><br>
+            <b>Sujet</b> : Ajouter un nouvel évenement.  <br>
+            <b>Titre</b> : Titre de l'evenement (ce qui apparaitra en entete en gras sur la page de site)  <br>
+            <b>Énnoncé</b> : Mettez tous les détails possibles, y compris la date et le lieu (ville et adresse civile).  <br>
+            <b>Vos Contacts</b> : Votre nom complet et Numero de Telephone ( Numéro Facultatif : si les visiteurs vellent vous contacter ).  <br>
+            <b>Géo-Localisation</b> : Ville, adresse de l'évenement, et établissement affilié (s'il y a lieu) <br>
+            <b>Lien URL</b> : Si applicable , un lien URL ou on a d'avantages d'informations. Ca peut être sur le site de votre établissement, un lien Facebook, ... (s'il y a lieu) <br>
+            <b>Un média</b> : Une image ou une vidéo descriptible de l'evenement < 24 Mo. <br>
+        </div><br><br><br>
+
+{% endblock %}
+        
+        
+
+        
+	

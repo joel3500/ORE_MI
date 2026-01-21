@@ -1,0 +1,15 @@
+# Option B : un mini module JS + templates simplifiés (plus clean à long terme).
+
+# 2 comptes admin pour modérer :
+- Premier compte :
+	prenom=Joel
+	nom=Sandé
+	email=oremi.joel@gmail.com
+	ville=Chicoutimi
+	mot_de_passe=EpistePlous2025UQAC$$$
+- Deuxieme compte :
+	prenom=Tiffany
+	nom=Yaka
+	email=oremi.tiffany@gmail.com
+	ville=Chicoutimi
+	mot_de_passe=Cameroun2026

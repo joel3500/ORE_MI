@@ -1,0 +1,37 @@
+
+/* =====================================================
+   CAROUSEL MOBILE LOCK (robuste)
+   - Verrouille la hauteur du carrousel par breakpoint
+   - Force les images à remplir (object-fit: cover)
+   - Gagne contre 'img { height:auto }' et styles inline
+   ===================================================== */
+
+:root { --carousel-h: 260px; }  /* mobile par défaut */
+
+#myCarousel,
+#myCarousel .carousel-inner { height: var(--carousel-h) !important; }
+
+#myCarousel .item,
+#myCarousel .carousel-item { height: 100% !important; }
+
+#myCarousel .item > img,
+#myCarousel .carousel-item > img,
+#myCarousel img,
+#myCarousel .carousel-item img,
+.carousel .item > img,
+.carousel .carousel-item > img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+  display: block !important;
+}
+
+/* Si l'ID n'est pas 'myCarousel', couvre aussi .carousel */
+.carousel { height: var(--carousel-h) !important; }
+.carousel .carousel-inner { height: 100% !important; }
+.carousel .item, .carousel .carousel-item { height: 100% !important; }
+
+@media (min-width: 576px){ :root { --carousel-h: 320px; } }
+@media (min-width: 768px){ :root { --carousel-h: 420px; } }
+@media (min-width: 992px){ :root { --carousel-h: 520px; } }

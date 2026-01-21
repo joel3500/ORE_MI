@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+
+<html>
+	<!-- Entete de la page -->
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Le GUIDE du nouvel arrivant : pour étudiants internationaux</title>
+		<link rel="stylesheet" type="text/css" href="css/design_jardin_secret.css"/>
+		<script src="js/data.js"></script>
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins|Sofia|Trirong|Audiowide">
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins&effect=fire|neon|outline|emboss|shadow-multiple"> 
+	</head>
+
+	<!-- Corps de la page -->
+	<body>
+		<header>
+			<h2> ORE MI </h2>
+			<p class="oublie"> Le Guide du nouvel arrivant, étudiants sur place, et étudiants projétant d'arriver très prochainement </p>
+            <a href="{{ url_for('vos_impressions') }}" title="Formulaire de satisfaction : Laissez-nous savoir votre expérience de visite du site"><img id="formulaire1" src="img/feedback_1.png"/></a>
+            <div class="navbar">
+                <!--
+                <a href="#home">Accueil</a>
+
+                Carousel images : https://www.w3schools.com/bootstrap/tryit.asp?filename=trybs_ref_js_carousel_interval_data&stacked=h
+                -->
+                <div class="dropdown">
+                    <button class="dropbtn">Accueil 
+                        <i class="fa fa-caret-down"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('index') }}" title="Page d'accueil">Page d'accueil</a>
+                        <a href="{{ url_for('procedures_administratives') }}" title="Procédures d'admission et d'inscription dans les établissement d'enseignement du saguenay. Tu veux savoir par où commencer, quelles sont les différentes étapes à suivre dépuis l'édée de venir poursuivre tes études jusqu'à ton installation  pour démarrer tes cours.">Procédures Administratives</a>
+                        <a href="{{ url_for('documents_administratifs') }}" title="Sur la base des procédures administratives, cette section vous énumère la liste des documents administratifs dont vous aurez besoin tout le long du processus. C'est quoi le C.A.Q ? le permis d'étude ?">Documents Administratifs</a>
+                        <a href="{{ url_for('finances') }}" title="Gestion des cartes bancaires. Comportements à adopter lorsqu’on se fait voler. Liste énumérative des banques présentes sur le territoire. Les notions de crédit, d’impôts, de prêts ainsi que les prélèvements automatiques (dépenses mensuelles comme logement, Hydro-Québec, etc.).">Finances</a>
+                    </div>
+                </div>
+
+                <div class="dropdown">
+                    <button class="dropbtn">Présentation 
+                        <i class="fa fa-caret-down"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('qui_sommes_nous') }}">Qui sommes-nous ?</a>
+                        <a href="{{ url_for('nos_missions') }}">Nos missions</a>
+                        <a href="{{ url_for('nos_partenaires') }}">Nos partenaires</a>
+                        <a href="#">Nos réalisations</a>
+                        <a href="{{ url_for('nous_contacter') }}">Nous contacter</a>
+                    </div>
+                </div> 
+
+                <div class="dropdown">
+                    <button class="dropbtn">Informations
+                        <i class="fa fa-caret-down"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('etudier_au_quebec') }}">Étudier au Québec</a>
+                        <a href="{{ url_for('vivre_au_quebec') }}">Vivre au Québec</a>
+                        <a href="{{ url_for('travailler_au_quebec') }}" title="Comportement à avoir en milieu d'emplois, les règles écrites ou non-écrites">Travailler au Québec</a>
+                        <a href="{{ url_for('ici_chez_nous') }}" title="Faciliter la communication et l'échange d'informations entre les étudiants internationaux">Se divertir au Saguenay</a>
+                        <a href="{{ url_for('temoignages') }}" title="Témoignages Vidéos d'expériences du vécu des étudiants">Témoignages Vidéos d'expérience</a>
+                        <a href="{{ url_for('l_apres_diplome') }}">Prévoir son après-diplôme</a>
+                    </div>
+                </div> 
+      
+                <div class="dropdown">
+                    <button class="dropbtn">Services 
+                        <i class="fa fa-caret-down"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('trouver_sa_formation') }}">Trouver sa formation</a>
+                        <a href="{{ url_for('trouver_son_etablissement') }}">Trouver son établissement</a>
+                        <a href="{{ url_for('trouver_sa_bourse') }}">Trouver sa bourse</a>
+                        <a href="{{ url_for('trouver_son_visa') }}">Trouver son visa</a>
+                        <a href="{{ url_for('trouver_son_logement') }}">Trouver son logement</a>
+                        <a href="{{ url_for('colocation_vs_appartement') }}">Les Types de logements</a>
+                        <a href="{{ url_for('trouver_son_emplois') }}" title="Catalogue des sites de recherche d’emploi, dénombrement des entreprises qui recrutent couramment les étudiants et les finissants, éventuellement des modèles de cv québécois.">Trouver son emplois</a>
+                        <a href="#">S'inscrire à la newsletter</a>
+                        <a href="{{ url_for('participer_aux_evenements') }}">Participer aux événements</a>
+                        <a href="{{ url_for('topics') }}" title="Forums de communication et l'échange d'informations entre les étudiants internationaux">Rejoindre les forums</a>
+                        <a href="{{ url_for('chatter_en_ligne') }}">Chatter en ligne</a>
+                    </div>
+                </div> 
+
+                <div class="dropdown">
+                    <button class="dropbtn">Autres Ressources Locales 
+                        <i class="fa fa-caret-down"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('bibliotheques') }}">Les Bibliothèques</a>
+                        <a href="{{ url_for('centres_communautaires') }}" title="">Les Centres Communautaires</a>
+                        <a href="{{ url_for('associations_etudiantes') }}">Les Associations Étudiantes</a>
+                        <a href="{{ url_for('benevolat') }}" title="les opportunités de bénévolat">Les opportunités de Bénévolat</a>
+                        <a href="{{ url_for('services_de_sante') }}">Les Services de Santé</a>
+                        <a href="{{ url_for('installations_sportives') }}">Les Installations Sportives</a>
+                        <a href="{{ url_for('objets_perdus_retrouves') }}">Objets perdus ou Retrouvés</a>
+                        <a href="{{ url_for('ou_magasiner') }}">Où Magasiner ??</a>
+                    </div>
+                </div>
+            <!--
+                <div class="dropdown">
+                    <button class="dropbtn">Universite/Cegep 
+                        <i class="fa fa-caret-down"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        <a href="#" title="Université du Québec à Chicoutimi">UQAC</a>
+                        <a href="#" title="Université du Québec en Abitibi-Timescaming">UQAT</a>
+                        <a href="#" title="Université du Québec À Trois-Rivière">UQTR</a>
+                        <a href="#" title="Université du Québec à Rimouski">UQAR</a>
+                        <a href="#" title="École Nationale d'Administration Publique">ÉNAP</a>
+                        <a href="#" title="Université de Laval">ULaval</a>
+                        <a href="#" title="Université Bishop">Université Bishop</a>
+                        <a href="#" title="Université de Sherbrooke">UdeS</a>
+                        <a href="#" title="Haute Étude Commerciale">HEC</a>
+                        <a href="#" title="École de Technologie Supérieure">ETS</a>
+                        <a href="#" title="École Polytechnique de Montréal">Polytech</a>
+                        <a href="#" title="Université de Concordia">Concordia</a>
+                        <a href="#" title="Université de Montréal">UdeM</a>
+                        <a href="#" title="Université Mc Gill">McGill</a>
+                        <a href="#" title="Université du Québec À Montréal">UQAM</a>
+                        <a href="#" title="Université du Québec en Outaouais">UQO</a>
+                        <a href="#" title="Université Téluq">TÉLUQ</a>
+                    </div>
+                </div>
+            -->    
+            
+		</header><br><br>
+
+        {% block content %}
+            
+        {% endblock %}
+		
+        <!-- Le pied de page -->
+        <footer>
+            Venez visiter le site et surtout, n'oubliez pas de nous laisser vos commentaires pour pouvoir l'améliorer pour le profit de toute la communauté internationalle <br>
+            | Tout Droits Réservés |                                 <br>
+            Idée de conception et Co-fondatrice : Tiffany Paule Yaka <br>
+            Webmaster et Co-fondateur : Joel Sandé                   <br>
+            Conseiller Général, Sénior : Frederic Wappi              <br>
+
+            Nous invitons les étudiants aspirants aux stages à se joindre à nous pour bonifier le site de sorte à mieux désservir la population.
+            Les étudiants seuls connaissent les besoins des étudiants. Des Ribriques DINGUES seront ajoutées. 
+            Ceci n'est que le Début d'une belle aventure sociale partant de la région du Québec. 
+            Les bénéfices s'il y en a, nous permettront d'aider les étudiants talentueux 
+            (mode, culture, art, génie, activité extra-scolaires, ...) 
+            en difficultés ... Nous allons mettre aussi beaucoup l'accent sur la Vie après les études, 
+            car c'est inadmissible que des étudiants se retrouvent au chomage aprèes 2, 3, 4 années d'études. 
+            Nous avons pensé à tout celà et nous allons vous montrer les solutions concrètes et évidentes dans la Rubrique 'Forum de Discussion' qui sera bientôt disponbles.
+        </footer>
+
+	</body>
+		
+</html>

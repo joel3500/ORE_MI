@@ -1,0 +1,152 @@
+{% extends "base_2.html" %}
+
+{% block content %}
+
+        <p class="sous_section"> TROUVER SON LOGEMENT AU QUÉBEC </p>
+        <div class="text-service-aide">
+            Bienvenue! Voici un tour d’horizon des <b>ressources fiables</b> pour louer une chambre, un studio ou un appartement au Québec. 
+            Tu trouveras d’abord les <b>plateformes provinciales</b>, puis les <b>ressources étudiantes</b>, et enfin des <b>conseils légaux</b> pour éviter les pièges.
+        </div><br><br>
+
+        <p class="sous_section"> PLATEFORMES PRINCIPALES (Province de Québec) </p>
+        <div class="text-service-aide">
+            <style>
+                .badge{display:inline-block;padding:2px 6px;margin-left:6px;border:1px solid #e5e7eb;border-radius:999px;font-size:.75rem;color:#374151;background:#f9fafb}
+                .badge.fr{background:#eef2ff}
+                .badge.en{background:#ecfeff}
+                .badge.budget{background:#ecfdf5}
+                .badge.broker{background:#fff7ed}
+                .badge.warn{background:#fef2f2}
+            </style>
+
+            <ul>
+                <li><a href="https://www.kangalou.com/fr/" target="_blank" rel="noopener">Kangalou</a>
+                    <span class="badge fr">FR</span><span class="badge budget">$</span> — Plateforme centrée Québec, filtres clairs et contenu en français.</li>
+                <li><a href="https://louer.ca/" target="_blank" rel="noopener">Louer.ca</a>
+                    <span class="badge fr">FR</span><span class="badge budget">$</span> — Agrégateur avec alertes par ville/quartier.</li>
+                <li><a href="https://www.logisquebec.com/a-louer" target="_blank" rel="noopener">LogisQuébec</a>
+                    <span class="badge fr">FR</span><span class="badge budget">$</span> — Annonces à l’échelle de la province (création d’alertes)..</li>
+                <li><a href="https://rentals.ca/" target="_blank" rel="noopener">Rentals.ca</a>
+                    <span class="badge en">EN/FR</span> — Couverture large, vues cartes et tendances de loyers.</li>
+                <li><a href="https://www.padmapper.com/apartments/quebec-qc" target="_blank" rel="noopener">PadMapper</a>
+                    <span class="badge en">EN</span> — Recherche par carte, filtres (prix, nombre de pièces, animaux).</li>
+                <li><a href="https://www.zumper.com/apartments-for-rent/quebec-qc" target="_blank" rel="noopener">Zumper</a>
+                    <span class="badge en">EN</span> — Agrégateur anglophone avec alertes et statistiques.</li>
+                <li><a href="https://www.centris.ca/fr/condo-appartement~a-louer" target="_blank" rel="noopener">Centris</a>
+                    <span class="badge broker">Courtiers</span> — Listings via courtiers (appartements/condos à louer).</li>
+                <li><a href="https://www.realtor.ca/qc" target="_blank" rel="noopener">REALTOR.ca</a>
+                    <span class="badge broker">Courtiers</span> — Plateforme des courtiers immobiliers (section location).</li>
+                <li><a href="https://immo.lespac.com/fr/location/appartements-logements/L1-8" target="_blank" rel="noopener">LesPAC Immo</a>
+                    <span class="badge fr">FR</span> — Petites annonces (locations long/court terme, 3½/4½, etc.).</li>
+                <li><a href="https://www.kijiji.ca/b-appartement-condo/quebec/c37l9001" target="_blank" rel="noopener">Kijiji — Québec</a>
+                    <span class="badge warn">Attention</span> — Petites annonces, filtrage par ville/arrondissement.</li>
+            </ul>
+            <i>Ordre établi pour maximiser <b>budget</b>, <b>proximité</b> (filtres par quartiers) et <b>FR/EN</b> selon le besoin.</i><br>
+            <i>Astuce :</i> crée des <b>alertes e‑mail</b> (prix/quartier) sur 2–3 plateformes pour maximiser les chances.
+        </div><br><br>
+
+        <p class="sous_section"> LIENS DIRECTS PAR VILLE (accès rapide) </p>
+        <div class="text-service-aide">
+            <h3 style="margin:10px 0 6px 0">Saguenay</h3>
+            <ul>
+                <li><a href="https://www.padmapper.com/apartments/saguenay-qc" target="_blank" rel="noopener">PadMapper</a></li>
+                <li><a href="https://www.zumper.com/apartments-for-rent/saguenay-qc" target="_blank" rel="noopener">Zumper</a></li>
+                <li><a href="https://rentals.ca/saguenay" target="_blank" rel="noopener">Rentals.ca</a></li>
+                <li><a href="https://sae.uqac.ca/logementhorscampus/" target="_blank" rel="noopener">UQAC — Logement hors campus</a></li>
+                <li><a href="https://siuq.uquebec.ca/chicoutimi" target="_blank" rel="noopener">Résidences UQAC</a></li>
+            </ul>
+            <h3 style="margin:10px 0 6px 0">Québec (ville)</h3>
+            <ul>
+                <li><a href="https://www.padmapper.com/apartments/quebec-qc" target="_blank" rel="noopener">PadMapper</a></li>
+                <li><a href="https://www.zumper.com/apartments-for-rent/quebec-qc" target="_blank" rel="noopener">Zumper</a></li>
+                <li><a href="https://rentals.ca/quebec-city" target="_blank" rel="noopener">Rentals.ca</a></li>
+                <li><a href="https://www.residences.ulaval.ca/" target="_blank" rel="noopener">ULaval — Résidences</a></li>
+            </ul>
+            <h3 style="margin:10px 0 6px 0">Montréal</h3>
+            <ul>
+                <li><a href="https://www.padmapper.com/apartments/montreal-qc" target="_blank" rel="noopener">PadMapper</a></li>
+                <li><a href="https://www.zumper.com/apartments-for-rent/montreal-qc" target="_blank" rel="noopener">Zumper</a></li>
+                <li><a href="https://rentals.ca/montreal" target="_blank" rel="noopener">Rentals.ca</a></li>
+                <li><a href="https://www.csu.qc.ca/services/hojo/" target="_blank" rel="noopener">Concordia — HOJO</a></li>
+                <li><a href="https://www.classifieds.csu.qc.ca/" target="_blank" rel="noopener">Concordia — HOJO Classifieds</a></li>
+                <li><a href="https://www.mcgill.ca/students/housing/offcampus" target="_blank" rel="noopener">McGill — Off‑campus</a></li>
+                <li><a href="https://vieetudiante.umontreal.ca/a-propos/service/logement-hors-campus" target="_blank" rel="noopener">UdeM — Logement hors campus</a></li>
+                <li><a href="https://www.zumresidences.ca/fr/" target="_blank" rel="noopener">UdeM — Résidences ZUM</a></li>
+                <li><a href="https://residences.uqam.ca/" target="_blank" rel="noopener">UQAM — Résidences</a></li>
+            </ul>
+            <h3 style="margin:10px 0 6px 0">Sherbrooke</h3>
+            <ul>
+                <li><a href="https://www.padmapper.com/apartments/sherbrooke-qc" target="_blank" rel="noopener">PadMapper</a></li>
+                <li><a href="https://www.zumper.com/apartments-for-rent/sherbrooke-qc" target="_blank" rel="noopener">Zumper</a></li>
+                <li><a href="https://rentals.ca/sherbrooke" target="_blank" rel="noopener">Rentals.ca</a></li>
+                <li><a href="https://www.usherbrooke.ca/hebergement/" target="_blank" rel="noopener">Université de Sherbrooke — Résidences</a></li>
+            </ul>
+            <h3 style="margin:10px 0 6px 0">Trois‑Rivières</h3>
+            <ul>
+                <li><a href="https://www.padmapper.com/apartments/trois-rivieres-qc" target="_blank" rel="noopener">PadMapper</a></li>
+                <li><a href="https://www.zumper.com/apartments-for-rent/trois-rivieres-qc" target="_blank" rel="noopener">Zumper</a></li>
+                <li><a href="https://rentals.ca/trois-rivieres" target="_blank" rel="noopener">Rentals.ca</a></li>
+                <li><a href="https://www.uqtr.ca/logement-et-residences/index.shtml" target="_blank" rel="noopener">UQTR — Logement et résidences</a></li>
+            </ul>
+            <h3 style="margin:10px 0 6px 0">Gatineau</h3>
+            <ul>
+                <li><a href="https://www.padmapper.com/apartments/gatineau-qc" target="_blank" rel="noopener">PadMapper</a></li>
+                <li><a href="https://www.zumper.com/apartments-for-rent/gatineau-qc" target="_blank" rel="noopener">Zumper</a></li>
+                <li><a href="https://rentals.ca/gatineau" target="_blank" rel="noopener">Rentals.ca</a></li>
+            </ul>
+            <i>Astuce :</i> combine 2–3 plateformes et active des <b>alertes</b> (quartier/prix).
+        </div><br><br>
+        <p class="sous_section"> RESSOURCES ÉTUDIANTES & RÉSIDENCES UNIVERSITAIRES </p>
+        <div class="text-service-aide">
+            <b>Portails étudiants / hors campus</b>
+            <ul>
+                <li><a href="https://www.classifieds.csu.qc.ca/" target="_blank" rel="noopener">Concordia — HOJO Classifieds</a> + <a href="https://www.csu.qc.ca/services/hojo/" target="_blank" rel="noopener">centre HOJO</a> (ateliers droits/arnaques).</li>
+                <li><a href="https://vieetudiante.umontreal.ca/a-propos/service/logement-hors-campus" target="_blank" rel="noopener">UdeM — Logement hors campus</a> (liste mise à jour).</li>
+                <li><a href="https://www.mcgill.ca/students/housing/offcampus" target="_blank" rel="noopener">McGill — Off‑campus housing</a> (partenariat <i>Places4Students</i>).</li>
+                <li><a href="https://sae.uqac.ca/logementhorscampus/" target="_blank" rel="noopener">UQAC — Logement hors campus</a> (infos locales Saguenay).</li>
+            </ul>
+
+            <b>Résidences sur campus (exemples)</b>
+            <ul>
+                <li><a href="https://siuq.uquebec.ca/chicoutimi" target="_blank" rel="noopener">UQAC — Résidences (Chicoutimi)</a></li>
+                <li><a href="https://www.residences.ulaval.ca/" target="_blank" rel="noopener">Université Laval — Résidences</a></li>
+                <li><a href="https://residences.uqam.ca/" target="_blank" rel="noopener">UQAM — Résidences</a></li>
+                <li><a href="https://www.zumresidences.ca/fr/" target="_blank" rel="noopener">UdeM — Résidences ZUM</a></li>
+                <li><a href="https://www.concordia.ca/students/housing.html" target="_blank" rel="noopener">Concordia — Student Housing</a></li>
+                <li><a href="https://www.mcgill.ca/students/housing/residence-options" target="_blank" rel="noopener">McGill — Residences</a></li>
+                <li><a href="https://www.usherbrooke.ca/hebergement/" target="_blank" rel="noopener">Université de Sherbrooke — Résidences</a></li>
+                <li><a href="https://www.uqtr.ca/logement-et-residences/index.shtml" target="_blank" rel="noopener">UQTR — Logement et résidences</a></li>
+            </ul>
+
+            <b>Coops & logements étudiants abordables</b>
+            <ul>
+                <li><a href="https://www.utile.org/" target="_blank" rel="noopener">UTILE</a> — Projets de logements étudiants abordables (Montréal, Québec, Sherbrooke, Rimouski, Trois‑Rivières).</li>
+                <li><a href="https://cooperativehabitation.coop/cooperatives/" target="_blank" rel="noopener">CQCH</a> — Répertoire des coopératives d’habitation au Québec.</li>
+            </ul>
+        </div><br><br>
+
+
+        <p class="sous_section"> DROITS & PRÉCAUTIONS (À LIRE ABSOLUMENT) </p>
+        <div class="text-service-aide">
+            <ul>
+                <li><b>Bail obligatoire</b> : Utiliser le <a href="https://www.tal.gouv.qc.ca/fr/signature-d-un-bail/qu-est-ce-qu-un-bail" target="_blank" rel="noopener">formulaire de bail du TAL</a> pour tout nouveau bail au Québec.</li>
+                <li><b>Dépôts illégaux</b> : Le locateur ne peut exiger de <a href="https://www.quebec.ca/nouvelles/actualites/details/exiger-un-depot-de-garantie-est-illegal" target="_blank" rel="noopener">dépôt de garantie</a> ni de chèques postdatés obligatoires.</li>
+                <li><b>Paiement du loyer</b> : Le TAL précise les <a href="https://www.tal.gouv.qc.ca/fr/etre-locataire/paiement-du-loyer" target="_blank" rel="noopener">règles de paiement</a> (pas plus d’un mois d’avance).</li>
+                <li><b>Augmentations</b> : Consulte les <a href="https://www.tal.gouv.qc.ca/en/news/detail?code=calculation-of-the-2025-rent-adjustment" target="_blank" rel="noopener">outils TAL 2025</a> pour discuter d’un ajustement de loyer.</li>
+                <li><b>Aides financières</b> : Programme <a href="https://www.revenuquebec.ca/fr/citoyens/votre-situation/faible-revenu/programme-allocation-logement/" target="_blank" rel="noopener">Allocation‑logement</a> (sous conditions).</li>
+                <li><b>Éviter les arnaques</b> : Ne jamais envoyer d’argent avant une visite, exiger le bail officiel, demander des reçus, vérifier l’identité du propriétaire.</li>
+            </ul>
+        </div><br><br>
+
+        <p class="sous_section"> CONSEILS PRATIQUES POUR RÉUSSIR TA RECHERCHE </p>
+        <div class="text-service-aide">
+            <ul>
+                <li><b>Timing</b> : Les baux commencent souvent le <b>1er juillet</b>; démarre 6–8 semaines avant et fixe des alertes sur 2–3 sites.</li>
+                <li><b>Dossier</b> : Prépare pièces d’identité, preuves de revenus/garant, références. Pas de NAS requis pour louer.</li>
+                <li><b>Visite</b> : Inspecte plomberie, chauffage, fenêtres, bruit; pose des questions (charges, sous-location, stationnement, animaux).</li>
+                <li><b>Colocation</b> : Règles claires, bail commun ou cession/ajout d’occupant selon le cas.</li>
+                <li><b>Budget</b> : Prévoyez électricité/Internet/assurance locataire; compare par quartiers.</li>
+            </ul>
+        </div><br><br><br>
+
+{% endblock %}

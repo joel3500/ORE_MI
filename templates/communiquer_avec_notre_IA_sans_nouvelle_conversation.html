@@ -1,0 +1,171 @@
+{% extends "base_2.html" %}
+
+{% block content %}
+
+        <div class="text-service-aide">
+        <div class="oremi-chat">
+          <h3>Communiquer avec notre IA (streaming)</h3>
+
+          <div id="oremiChatLog" class="oremi-chatlog">
+            <div class="oremi-msg oremi-ai">Salut 👋 Écris ta question. Je réponds en direct.</div>
+          </div>
+
+          <form id="oremiChatForm" class="oremi-chatform" autocomplete="off">
+            <input id="oremiChatInput" type="text" placeholder="Ex: Comment trouver un logement au Saguenay ?" />
+            <button id="oremiSendBtn" type="submit">Envoyer</button>
+            <button id="oremiStopBtn" type="button" title="Arrêter la réponse">Stop</button>
+          </form>
+
+          <div id="oremiStatus" class="oremi-status"></div>
+        </div>
+
+        <style>
+          /* Styles locaux (ne touche pas ton CSS global) */
+          .oremi-chat { max-width: 900px; margin: 0 auto; }
+          .oremi-chat h3 { margin: 0 0 10px 0; font-family: Poppins, Arial, sans-serif; }
+          .oremi-chatlog{
+            height: 420px; overflow: auto;
+            padding: 12px; border-radius: 12px;
+            background: #fff;
+            border: 1px solid rgba(0,0,0,0.15);
+          }
+          .oremi-msg{
+            margin: 10px 0; padding: 10px 12px; border-radius: 14px;
+            max-width: 85%;
+            white-space: pre-wrap;
+            word-break: break-word;
+            line-height: 1.35;
+            display: block;
+          }
+          .oremi-user{
+            margin-left: auto;
+            background: rgba(0, 120, 255, 0.12);
+            border: 1px solid rgba(0, 120, 255, 0.25);
+          }
+          .oremi-ai{
+            margin-right: auto;
+            background: rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.10);
+          }
+          .oremi-chatform{
+            display: flex; gap: 10px;
+            margin-top: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+          }
+          .oremi-chatform input{
+            flex: 1; min-width: 220px;
+            padding: 12px; border-radius: 10px;
+            border: 1px solid rgba(0,0,0,0.18);
+            font-size: 16px;
+            outline: none;
+          }
+          .oremi-chatform button{
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 0;
+            cursor: pointer;
+            font-weight: 700;
+          }
+          #oremiStopBtn{ opacity: 0.85; }
+          .oremi-status{ margin-top: 8px; font-size: 13px; opacity: 0.75; }
+        </style>
+
+        <script>
+          // ====== Chat SSE streaming (ORE MI) ======
+          const chatlog  = document.getElementById("oremiChatLog");
+          const form     = document.getElementById("oremiChatForm");
+          const input    = document.getElementById("oremiChatInput");
+          const sendBtn  = document.getElementById("oremiSendBtn");
+          const stopBtn  = document.getElementById("oremiStopBtn");
+          const statusEl = document.getElementById("oremiStatus");
+
+          let es = null; // EventSource courant (pour Stop)
+
+          function addMsg(text, who){
+            const div = document.createElement("div");
+            div.className = "oremi-msg " + who;
+            div.textContent = text;
+            chatlog.appendChild(div);
+            chatlog.scrollTop = chatlog.scrollHeight;
+            return div;
+          }
+
+          function setBusy(isBusy){
+            input.disabled = isBusy;
+            sendBtn.disabled = isBusy;
+            stopBtn.disabled = !isBusy;
+          }
+
+          function stopStream(){
+            if(es){
+              es.close();
+              es = null;
+            }
+            statusEl.textContent = "";
+            setBusy(false);
+            input.focus();
+          }
+
+          stopBtn.addEventListener("click", stopStream);
+          stopBtn.disabled = true;
+
+          function streamChat(message){
+            // ferme un stream précédent si jamais
+            stopStream();
+
+            addMsg(message, "oremi-user");
+            const aiDiv = addMsg("", "oremi-ai");
+
+            statusEl.textContent = "Réponse en cours…";
+            setBusy(true);
+
+            // Ton backend SSE accepte GET /api/chat/stream?message=... :contentReference[oaicite:2]{index=2}
+            const url = "/api/chat/stream?message=" + encodeURIComponent(message);
+            es = new EventSource(url);
+
+            es.onmessage = (ev) => {
+              // Ton serveur envoie: data: {"text": token} puis data: {"done": true} :contentReference[oaicite:3]{index=3}
+              try{
+                const obj = JSON.parse(ev.data);
+
+                if(obj.text){
+                  aiDiv.textContent += obj.text;
+                  chatlog.scrollTop = chatlog.scrollHeight;
+                }
+
+                if(obj.done){
+                  stopStream();
+                }
+
+                if(obj.error){
+                  statusEl.textContent = "Erreur IA: " + obj.error;
+                  stopStream();
+                }
+              }catch(e){
+                // fallback: si un chunk n’est pas du JSON
+                aiDiv.textContent += ev.data;
+                chatlog.scrollTop = chatlog.scrollHeight;
+              }
+            };
+
+            es.onerror = () => {
+              // Si le stream est désactivé, ton backend renvoie 503 :contentReference[oaicite:4]{index=4}
+              statusEl.textContent = "Connexion stream interrompue (ou stream désactivé).";
+              stopStream();
+            };
+          }
+
+          form.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const msg = (input.value || "").trim();
+            if(!msg) return;
+            input.value = "";
+            streamChat(msg);
+          });
+        </script>
+      </div>
+
+{% endblock %}
+        
+      

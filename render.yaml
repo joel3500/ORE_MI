@@ -1,0 +1,54 @@
+services:
+  - type: web
+    name: ore-mi
+    runtime: python
+    autoDeploy: true
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn -w 1 -k gevent --timeout 0 -b 0.0.0.0:$PORT app:app
+    
+    envVars:
+        - key: PYTHON_VERSION
+          value: 3.11.9
+      
+        - key: DISABLE_STREAM
+          value: "0"
+      
+        - key: FLASK_SECRET_KEY
+          generateValue: true
+
+        - key: VERIFICATION_PEPPER
+          generateValue: true
+
+        - key: DATABASE_URL
+          fromDatabase:
+            name: ore-mi-db
+            property: connectionString
+
+        # En prod, recommande de désactiver le fallback SQLite
+        - key: ALLOW_SQLITE_FALLBACK
+          value: "0"
+
+        # Chatbot
+        - key: OPENAI_MODEL
+          value: "gpt-5.1"
+        - key: OPENAI_TEMP
+          value: "0.3"
+        - key: DISABLE_STREAM
+          value: "0"
+
+        # Email (Gmail SMTP)
+        - key: SMTP_HOST
+          value: "smtp.gmail.com"
+        - key: SMTP_PORT
+          value: "587"
+        - key: SMTP_TLS
+          value: "1"
+        - key: SMTP_USER
+          value: "oremi.joel@gmail.com"
+        - key: SMTP_FROM
+          value: "ORE MI <oremi.joel@gmail.com>"
+        - key: SHOW_DEBUG_CODE
+          value: "0"
+
+databases:
+  - name: ore-mi-db

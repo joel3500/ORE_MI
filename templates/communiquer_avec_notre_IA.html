@@ -1,0 +1,335 @@
+{% extends "base_2.html" %}
+
+{% block content %}
+    <div class="text-service-aide">
+        <div class="oremi-chat">
+          <div class="oremi-chat-topbar">
+            <h3 class="oremi-title">Communiquer avec notre IA (en streaming)</h3>
+
+            <div class="oremi-actions">
+              <button id="oremiNewBtn" type="button" class="oremi-btn">Nouvelle discussion</button>
+              <button id="oremiStopBtn" type="button" class="oremi-btn">Stop</button>
+            </div>
+          </div>
+
+          <div id="oremiChatLog" class="oremi-chatlog"></div>
+
+          <form id="oremiChatForm" class="oremi-chatform" autocomplete="off">
+            <textarea id="oremiChatInput" rows="2" placeholder="Écris ta question ici… mais si tu as plus d'une vingtaine de questions, tu es mieux d'utiliser une IA sur ton navigateur, pour libérer notre petit serveur èa budjet étudiant :) "></textarea>
+            <button id="oremiSendBtn" type="submit" class="oremi-btn oremi-btn-primary">Envoyer</button>
+          </form>
+
+          <div id="oremiStatus" class="oremi-status"></div>
+        </div>
+    </div><br><br>
+        
+
+        <style>
+          /* Styles locaux uniquement pour ce chat (n’écrase pas ton CSS global) */
+          .oremi-chat { max-width: 980px; margin: 0 auto; font-family: Poppins, Arial, sans-serif; }
+          .oremi-chat-topbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+          .oremi-title { margin: 0; }
+          .oremi-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+          .oremi-chatlog{
+            height: 430px; overflow: auto;
+            padding: 12px; border-radius: 12px;
+            background: #fff;
+            border: 1px solid rgba(0,0,0,0.15);
+            margin-top: 10px;
+          }
+
+          .oremi-msg{
+            margin: 10px 0; padding: 10px 12px; border-radius: 14px;
+            max-width: 88%;
+            white-space: pre-wrap;
+            word-break: break-word;
+            line-height: 1.35;
+          }
+          .oremi-user{
+            margin-left: auto;
+            background: rgba(0, 120, 255, 0.12);
+            border: 1px solid rgba(0, 120, 255, 0.25);
+          }
+          .oremi-ai{
+            margin-right: auto;
+            background: rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.10);
+          }
+
+          .oremi-chatform{
+            display: flex; gap: 10px;
+            margin-top: 12px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+          }
+          #oremiChatInput{
+            flex: 1; 
+            min-width: 240px;
+            height : 120px;
+            padding: 12px; border-radius: 10px;
+            border: 1px solid rgba(0,0,0,0.18);
+            font-size: 16px;
+            outline: none;
+            resize: vertical;
+          }
+
+          .oremi-btn{
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(0,0,0,0.15);
+            cursor: pointer;
+            font-weight: 700;
+            background: #fff;
+          }
+          .oremi-btn-primary{
+            border: 0;
+            background: rgba(0, 120, 255, 0.16);
+          }
+
+          .oremi-status{ margin-top: 8px; font-size: 13px; opacity: 0.75; }
+        </style>
+
+        <script>
+          // ===================================================
+          // ORE MI Chat - Streaming + Historique localStorage
+          // ===================================================
+
+          const STORAGE_KEY = "OREMI_CHAT_HISTORY_V1";
+
+          const chatlog  = document.getElementById("oremiChatLog");
+          const form     = document.getElementById("oremiChatForm");
+          const input    = document.getElementById("oremiChatInput");
+          const sendBtn  = document.getElementById("oremiSendBtn");
+          const stopBtn  = document.getElementById("oremiStopBtn");
+          const newBtn   = document.getElementById("oremiNewBtn");
+          const statusEl = document.getElementById("oremiStatus");
+
+          let abortCtrl = null;              // pour Stop
+          let history = loadHistory();       // [{role:"user|assistant", content:"...", ts:...}]
+          let lastSaveAt = 0;
+
+          // ------- Utils UI -------
+          function addMsg(text, who){
+            const div = document.createElement("div");
+            div.className = "oremi-msg " + who;
+            div.textContent = text || "";
+            chatlog.appendChild(div);
+            chatlog.scrollTop = chatlog.scrollHeight;
+            return div;
+          }
+
+          function setBusy(isBusy){
+            input.disabled = isBusy;
+            sendBtn.disabled = isBusy;
+            stopBtn.disabled = !isBusy;
+          }
+
+          function setStatus(txt){
+            statusEl.textContent = txt || "";
+          }
+
+          // ------- localStorage -------
+          function saveHistoryThrottled(force=false){
+            const now = Date.now();
+            if(!force && now - lastSaveAt < 250) return; // évite d’écrire 1000 fois/s
+            lastSaveAt = now;
+            try{
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+            }catch(e){
+              // si storage plein / bloqué -> pas grave, chat fonctionne quand même
+            }
+          }
+
+          function loadHistory(){
+            try{
+              const raw = localStorage.getItem(STORAGE_KEY);
+              const data = raw ? JSON.parse(raw) : [];
+              return Array.isArray(data) ? data : [];
+            }catch(e){
+              return [];
+            }
+          }
+
+          function clearHistory(){
+            history = [];
+            try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+          }
+
+          // ------- Render initial -------
+          function renderFromHistory(){
+            chatlog.innerHTML = "";
+            if(history.length === 0){
+              addMsg("Salut Big Boss ! Écris ta question ( en rapport avec le milieu scolaire ). ORE_MI répond en direct.", "oremi-ai");
+              return;
+            }
+            for(const m of history){
+              addMsg(m.content, m.role === "user" ? "oremi-user" : "oremi-ai");
+            }
+          }
+
+          renderFromHistory();
+          setBusy(false);
+
+          // ------- Stop stream -------
+          function stopStream(reason){
+            if(abortCtrl){
+              abortCtrl.abort();
+              abortCtrl = null;
+            }
+            setBusy(false);
+            setStatus(reason || "");
+            input.focus();
+          }
+
+          stopBtn.addEventListener("click", () => stopStream("Réponse arrêtée."));
+          stopBtn.disabled = true;
+
+          // ------- Nouvelle discussion -------
+          newBtn.addEventListener("click", () => {
+            stopStream("");
+            clearHistory();
+            renderFromHistory();
+            setStatus("Nouvelle discussion");
+          });
+
+          // ------- Parsing SSE (data: ...) depuis fetch -------
+          function parseSSEChunk(block){
+            // un "event" SSE est séparé par \n\n
+            // on récupère toutes les lignes data:
+            const lines = block.split("\n");
+            const dataLines = [];
+            for(const ln of lines){
+              if(ln.startsWith("data:")){
+                dataLines.push(ln.slice(5).trimStart());
+              }
+            }
+            return dataLines.join("\n").trim();
+          }
+
+          // ------- Streaming via POST /api/chat/stream -------
+          async function streamChat(message){
+            // coupe un stream existant
+            stopStream("");
+
+            // 1) UI + history: user
+            addMsg(message, "oremi-user");
+            history.push({ role: "user", content: message, ts: Date.now() });
+            saveHistoryThrottled(true);
+
+            // 2) UI + history: assistant (vide au départ, puis on l’alimente)
+            const aiDiv = addMsg("", "oremi-ai");
+            const aiIndex = history.length;
+            history.push({ role: "assistant", content: "", ts: Date.now() });
+
+            setBusy(true);
+            setStatus("Réponse en cours…");
+
+            abortCtrl = new AbortController();
+
+            // Ton backend supporte POST et lit {message, history} :contentReference[oaicite:2]{index=2}
+            const payload = {
+              message,
+              history // même si ton IA ne l’utilise pas encore, c’est prêt pour l’avenir
+            };
+
+            let resp;
+            try{
+              resp = await fetch("/api/chat/stream", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+                signal: abortCtrl.signal,
+              });
+            }catch(e){
+              setStatus("Impossible de contacter le serveur.");
+              setBusy(false);
+              return;
+            }
+
+            if(!resp.ok){
+              // si STREAM_DISABLED -> 503 :contentReference[oaicite:3]{index=3}
+              setStatus("Erreur serveur: " + resp.status);
+              setBusy(false);
+              return;
+            }
+
+            if(!resp.body){
+              setStatus("Streaming non supporté par ce navigateur.");
+              setBusy(false);
+              return;
+            }
+
+            const reader = resp.body.getReader();
+            const decoder = new TextDecoder("utf-8");
+            let buffer = "";
+
+            try{
+              while(true){
+                const { value, done } = await reader.read();
+                if(done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+
+                // découper par events SSE (\n\n)
+                const parts = buffer.split("\n\n");
+                buffer = parts.pop(); // garde le bout incomplet
+
+                for(const block of parts){
+                  const dataStr = parseSSEChunk(block);
+                  if(!dataStr) continue;
+
+                  // Ton serveur envoie du JSON: {"text": "..."} ou {"done": true} :contentReference[oaicite:4]{index=4}
+                  let obj = null;
+                  try{ obj = JSON.parse(dataStr); }catch(e){}
+
+                  if(obj && obj.text){
+                    aiDiv.textContent += obj.text;
+                    history[aiIndex].content += obj.text;
+                    chatlog.scrollTop = chatlog.scrollHeight;
+                    saveHistoryThrottled(false);
+                  }
+
+                  if(obj && obj.error){
+                    setStatus("Erreur IA: " + obj.error);
+                    saveHistoryThrottled(true);
+                    stopStream("");
+                    return;
+                  }
+
+                  if(obj && obj.done){
+                    saveHistoryThrottled(true);
+                    stopStream("");
+                    return;
+                  }
+                }
+              }
+
+              // si le flux se termine sans "done"
+              saveHistoryThrottled(true);
+              stopStream("");
+            }catch(e){
+              if(e.name === "AbortError"){
+                // stop volontaire
+                saveHistoryThrottled(true);
+                return;
+              }
+              setStatus("Flux interrompu.");
+              saveHistoryThrottled(true);
+              stopStream("");
+            }
+          }
+
+          // ------- Form submit -------
+          form.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const msg = (input.value || "").trim();
+            if(!msg) return;
+            input.value = "";
+            streamChat(msg);
+          });
+        </script>
+
+{% endblock %}
+        
+      

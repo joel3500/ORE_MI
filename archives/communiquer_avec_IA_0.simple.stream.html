@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ORE MI — Chat IA (stream avec fallback)</title>
+  <link rel="stylesheet" type="text/css" href="css/design_jardin_secret.css"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins|Sofia|Trirong|Audiowide">
+  <style>
+    .chat-panel{border:1px solid #e5e7eb;border-radius:12px;background:#fff;display:flex;flex-direction:column;min-height:520px}
+    .chat-toolbar{display:flex;gap:8px;justify-content:flex-end;border-bottom:1px solid #e5e7eb;padding:8px;flex-wrap:wrap}
+    .chat-toolbar button{border:1px solid #e5e7eb;background:#fff;border-radius:10px;padding:6px 10px;cursor:pointer}
+    .chat-messages{flex:1;overflow:auto;padding:16px;scroll-behavior:smooth}
+    .msg{display:flex;gap:10px;margin-bottom:14px}
+    .msg .bubble{max-width:80%;padding:10px 12px;border-radius:12px;border:1px solid #e5e7eb;white-space:pre-wrap;word-break:break-word}
+    .msg.user .bubble{margin-left:auto;background:#f0f9ff}
+    .msg.bot .bubble{background:#f9fafb}
+    .msg.bot.streaming .bubble{opacity:.9}
+    .chat-input{display:flex;gap:8px;padding:12px;border-top:1px solid #e5e7eb}
+    .chat-input textarea{flex:1;min-height:48px;max-height:140px;resize:vertical;padding:10px;border:1px solid #e5e7eb;border-radius:10px}
+    .chat-input button{padding:10px 14px;border:1px solid #e5e7eb;border-radius:10px;background:#111827;color:#fff;cursor:pointer}
+    .badge{border:1px solid #e5e7eb;border-radius:999px;padding:2px 8px;font-size:.8rem;background:#f9fafb;margin-right:8px}
+    .visually-hidden{position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden}
+  </style>
+</head>
+<body>
+<header>
+  <div class="header-title">ORE MI — Communiquer avec une IA (Streaming + Auto‑fallback)</div>
+</header>
+
+<div style="padding:8px 12px" id="status-line"></div>
+
+<p class="sous_section"> DÉMARRER LA CONVERSATION </p>
+<div class="text-service-aide">
+  <div class="chat-panel" aria-label="Chatbot IA">
+    <div class="chat-toolbar">
+      <span class="badge" id="mode-badge">Mode: STREAM</span>
+      <button id="btn-export" title="Télécharger l’historique (.txt)">Exporter</button>
+      <button id="btn-clear" title="Effacer l’historique">Effacer</button>
+      <button id="btn-stop" title="Arrêter la réponse en cours" disabled>Stop</button>
+    </div>
+    <div class="chat-messages" id="chat-messages" tabindex="0" aria-live="polite"></div>
+    <div class="chat-input">
+      <label for="chat-input" class="visually-hidden">Votre message</label>
+      <textarea id="chat-input" placeholder="Écris ta question… (Entrée pour envoyer)"></textarea>
+      <button id="btn-send">Envoyer</button>
+    </div>
+  </div>
+</div><br><br>
+
+<footer>
+  Venez visiter le site et surtout, n'oubliez pas de nous laisser vos commentaires pour pouvoir l'améliorer | Tous Droits Réservés |
+</footer>
+
+<script>
+const HISTORY_KEY = 'oremi_chat_history_v6';
+const API_CHAT = '/api/chat';
+const API_STREAM = '/api/chat_stream';
+let USE_STREAM = true; // sera confirmé par /health au boot
+let abortCtrl = null;  // pour Stop()
+
+let history = [];
+try { history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch(_) { history = []; }
+const HISTORY_LIMIT = 200;
+
+const $ = s => document.querySelector(s);
+const messagesEl = $('#chat-messages');
+const inputEl    = $('#chat-input');
+const btnSend    = $('#btn-send');
+const btnExport  = $('#btn-export');
+const btnClear   = $('#btn-clear');
+const btnStop    = $('#btn-stop');
+const statusLine = $('#status-line');
+const modeBadge  = $('#mode-badge');
+
+function setMode(stream){
+  USE_STREAM = !!stream;
+  modeBadge.textContent = 'Mode: ' + (USE_STREAM ? 'STREAM' : 'NON-STREAM');
+}
+
+function saveHistory(){
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(-HISTORY_LIMIT)));
+}
+function appendMessage(role, text, persist=true){
+  const wrap = document.createElement('div');
+  wrap.className = 'msg ' + (role==='user'?'user':'bot');
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.textContent = text;
+  wrap.appendChild(bubble);
+  messagesEl.appendChild(wrap);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+  if(persist){
+    history.push({ role: role==='user'?'user':'assistant', content: text });
+    saveHistory();
+  }
+  return wrap;
+}
+async function boot(){
+  try{
+    const resp = await fetch('/health', { cache:'no-store' });
+    const data = await resp.json();
+    setMode(!!data.stream);
+    statusLine.innerHTML = '<span class="badge">Serveur OK</span>' + (USE_STREAM ? 'Streaming actif' : 'Streaming désactivé — fallback non‑stream');
+  }catch(_){
+    setMode(false);
+    statusLine.innerHTML = '<span class="badge">Hors ligne</span> Utilisation locale, non‑stream uniquement.';
+  }
+  if(history.length === 0){
+    appendMessage('bot','👋 Bienvenue ! Pose ta question — streaming si disponible, sinon on bascule en non‑stream automatiquement.', false);
+  } else {
+    for(const m of history){ appendMessage(m.role==='user'?'user':'bot', m.content, false); }
+  }
+}
+boot();
+
+btnExport.addEventListener('click', (e)=>{
+  e.preventDefault();
+  const text = history.map(h => (h.role==='user'?'[User] ':'[Assistant] ') + h.content).join('\n\n');
+  const blob = new Blob([text], {type:'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'historique_chat_oremi.txt'; a.click();
+  URL.revokeObjectURL(url);
+});
+btnClear.addEventListener('click', (e)=>{
+  e.preventDefault();
+  messagesEl.innerHTML = '';
+  history = []; saveHistory();
+  appendMessage('bot', 'Historique effacé.', false);
+});
+
+function buildPayload(userText){
+  const sys = { role: 'system', content: 'You are a helpful mentor for students. Respond in the user\'s language automatically; if unclear, ask a brief clarifying question. Be clear and concise.' };
+  const recent = history.slice(-60);
+  return { messages: [sys].concat(recent).concat([{ role:'user', content: userText }]) };
+}
+
+async function callNonStream(userText){
+  const resp = await fetch(API_CHAT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(buildPayload(userText)),
+    signal: abortCtrl.signal
+  });
+  if(!resp.ok) throw new Error('HTTP ' + resp.status);
+  const data = await resp.json();
+  if(!data || typeof data.reply !== 'string') throw new Error('Réponse invalide');
+  return data.reply;
+}
+
+async function callStream(userText, onChunk, onDone, onError){
+  const resp = await fetch(API_STREAM, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'text/event-stream' },
+    body: JSON.stringify(buildPayload(userText)),
+    signal: abortCtrl.signal
+  });
+  if(!resp.ok) throw new Error('HTTP ' + resp.status);
+
+  const reader = resp.body.getReader();
+  const decoder = new TextDecoder('utf-8');
+  let buffer = '';
+
+  while(true){
+    const { value, done } = await reader.read();
+    if(done) break;
+    buffer += decoder.decode(value, { stream: true });
+    let parts = buffer.split('\n\n');
+    buffer = parts.pop();
+    for(const part of parts){
+      const lines = part.split('\n');
+      let event = 'message';
+      let data = '';
+      for(const line of lines){
+        if(line.startsWith('event:')) event = line.slice(6).trim();
+        else if(line.startsWith('data:')) data += line.slice(5).trim();
+      }
+      if(event === 'error'){ onError && onError(data); return; }
+      if(event === 'done'){ onDone && onDone(); return; }
+      if(data){ onChunk && onChunk(data + ''); }
+    }
+  }
+  onDone && onDone();
+}
+
+async function handleSend(){
+  const text = (inputEl.value||'').trim();
+  if(!text) return;
+  appendMessage('user', text);
+  inputEl.value = '';
+
+  abortCtrl = new AbortController();
+  btnSend.disabled = true;
+  btnStop.disabled = false;
+
+  const streamingNode = appendMessage('bot', '', false);
+  streamingNode.classList.add('streaming');
+  const bubble = streamingNode.querySelector('.bubble');
+  let full = '';
+  let fellBack = false;
+  let stopped = false;
+
+  const onChunk = chunk => { full += chunk; bubble.textContent = full; messagesEl.scrollTop = messagesEl.scrollHeight; };
+  const onDone  = () => finish();
+  const onError = async (err) => {
+    // Fallback automatique vers non‑stream
+    try{
+      fellBack = true;
+      setMode(false);
+      const reply = await callNonStream(text);
+      onChunk((full ? full + '\n' : '') + reply);
+      onDone();
+      statusLine.innerHTML = '<span class="badge">Fallback</span> Passage automatique en non‑stream.';
+    }catch(e){
+      bubble.textContent = 'Erreur : ' + (e.message || e);
+      finish();
+    }
+  };
+
+  function finish(){
+    streamingNode.classList.remove('streaming');
+    btnSend.disabled = false;
+    btnStop.disabled = true;
+    if(!stopped){
+      history.push({ role:'assistant', content: full }); saveHistory();
+    } else {
+      bubble.textContent = (full ? full + '\n' : '') + '[Réponse interrompue]';
+    }
+    abortCtrl = null;
+  }
+
+  btnStop.onclick = () => {
+    if(abortCtrl){ stopped = True; abortCtrl.abort(); }
+  };
+
+  try{
+    if(USE_STREAM){
+      await callStream(text, onChunk, onDone, onError);
+    }else{
+      const reply = await callNonStream(text);
+      onChunk(reply); onDone();
+    }
+  }catch(e){
+    if (e.name === 'AbortError') {
+      stopped = true;
+      bubble.textContent = (full ? full + '\n' : '') + '[Réponse interrompue]';
+    } else {
+      // Dernier filet de sécurité : fallback non‑stream si possible
+      if(USE_STREAM && !fellBack){
+        try{
+          const reply = await callNonStream(text);
+          onChunk(reply); onDone();
+          setMode(false);
+          statusLine.innerHTML = '<span class="badge">Fallback</span> Passage automatique en non‑stream.';
+        }catch(e2){
+          bubble.textContent = 'Erreur : ' + (e2.message || e2);
+        }
+      } else {
+        bubble.textContent = 'Erreur : ' + (e.message || e);
+      }
+    }
+    btnSend.disabled = false;
+    btnStop.disabled = true;
+    abortCtrl = null;
+  }
+}
+
+btnSend.addEventListener('click', handleSend);
+inputEl.addEventListener('keydown', (e)=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); handleSend(); } });
+</script>
+</body>
+</html>
