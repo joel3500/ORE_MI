@@ -581,6 +581,7 @@ def trouver_son_visa():
 def vivre_au_quebec():
     return render_template("vivre_au_quebec.html")
 
+
 #============== FIN des Routes Statiques  ====================#
 
 @app.get("/<path:page>")
