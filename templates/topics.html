@@ -24,97 +24,105 @@
   </style>
 
   <div class="sous_section"> ORE MI — Forum (Sujets) </div>
-
-  <div class="text-service-aide">
-      <div class="container">
-        <div class="card hstack" style="justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:16px">
-          <div class="hstack" style="gap:8px;flex:1 1 420px">
-            <input id="q" class="input" placeholder="Rechercher (titre, énoncé, auteur)..." style="flex:1 1 320px"/>
-            <button id="btn-search" class="btn light">Rechercher</button>
-            <button id="btn-clear" class="btn light">Effacer</button>
-          </div>
-          <div class="hstack" style="gap:8px">
-            <label class="muted">Trier&nbsp;:</label>
-            <select id="sort" class="input" style="width:200px">
-              <option value="recent">Plus récents</option>
-              <option value="commented">Plus commentés</option>
-            </select>
-          </div>
-        </div>
-
-        <div id="pager-top" class="pager"></div>
-        <div id="topics"></div>
-        <div id="pager-bottom" class="pager"></div>
-
-        <div class="card footer-form" id="newTopicBox">
-          <p class="sous_section">DÉMARRER UN SUJET</p>
-          <div class="vstack">
-            <div class="hstack" style="gap:10px;flex-wrap:wrap">
-              <input id="topic-author" class="input" placeholder="Nom complet" style="flex:1 1 240px"/>
-              <input id="topic-title" class="input" placeholder="Titre du sujet" style="flex:2 1 340px"/>
-            </div>
-            <textarea id="topic-body" class="input" rows="4" placeholder="Énoncé du sujet..."></textarea>
-            <div class="hstack">
-              <button id="btn-create-topic" class="btn">Publier le sujet</button>
-              <span class="muted">Reste courtois et précis</span>
-            </div>
-          </div>
-        </div>
-      </div>
+  <div class="text-service-aide"> Section pas encore disponible : Très Bientôt disponible ! et ça va être une DINGUERIE  !! </div>
+ 
+      <!--
   
-      <div id="newTopicLocked" style="display:none; padding:12px; border:1px dashed #aaa; border-radius:10px;">
-          🔒 Tu peux consulter tous les forums. Mais pour publier ou commenter, connectes-toi.
-      </div>
-  </div><br><br>
-
-  <div class="text-service-aide">
-      Rejoindre aussi d'autres Forums simulaires :
-      <ul>
-        <li>Habitat : Un Site qui te permettra de te trouver une chambre èa louer, ou inversement des Locataires selon tes Goûts. Nous utililisons des algorithmes pour matcher les gens selon leurs habitudes de vie. ( bientot disponible )</li>
-        <li>Forum des Passionnés de l'Entreprenariat : Partage, Échange entre personnes mordus de l'entreprenariat. ( bientot disponible )</li>
-        <li>Espérance Saguenay : Tu as un projet que tu veux réaliser ? Sky is the LIMIT. ( bientot disponible )</li>
-      </ul>
-      Vous connaissez des liens vers des Forums interessants pour les Étudiants ? envoyez nous les liens à oremi.joel@gmail.com pour que je les ajoute à cette Liste.
-  </div><br><br>
-
-  <div class="text-service-aide">
-      <section id="authBox" style="border:1px solid #ddd; padding:12px; border-radius:10px; margin-bottom:16px;">
-            <div id="authStatus" style="margin-bottom:10px;">Chargement…</div>
-
-            <div id="authForms" style="display:flex; gap:18px; flex-wrap:wrap;">
-              <!-- Register -->
-              <div id="inscription" style="min-width:260px;">
-                <h4 style="margin:0 0 8px 0;">Inscription</h4>
-                <input id="regFirst" placeholder="Prénom" style="width:100%; margin:4px 0;">
-                <input id="regLast" placeholder="Nom" style="width:100%; margin:4px 0;">
-                <input id="regEmail" placeholder="Email" style="width:100%; margin:4px 0;">
-                <input id="regCity" placeholder="Ville" style="width:100%; margin:4px 0;">
-                <input id="regPwd" type="password" placeholder="Mot de passe" style="width:100%; margin:4px 0;">
-                <button id="btnRegister" style="margin-top:6px;">Créer le compte</button>
-                <div id="regMsg" style="font-size:0.9em; margin-top:6px;"></div>
+        <div class="text-service-aide"> class="text-service-aide">
+            <div class="container">
+              <div class="card hstack" style="justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+                <div class="hstack" style="gap:8px;flex:1 1 420px">
+                  <input id="q" class="input" placeholder="Rechercher (titre, énoncé, auteur)..." style="flex:1 1 320px"/>
+                  <button id="btn-search" class="btn light">Rechercher</button>
+                  <button id="btn-clear" class="btn light">Effacer</button>
+                </div>
+                <div class="hstack" style="gap:8px">
+                  <label class="muted">Trier&nbsp;:</label>
+                  <select id="sort" class="input" style="width:200px">
+                    <option value="recent">Plus récents</option>
+                    <option value="commented">Plus commentés</option>
+                  </select>
+                </div>
               </div>
 
-              <!-- Verify -->
-              <div id="validation" style="min-width:260px;">
-                <h4 style="margin:0 0 8px 0;">Valider l’email</h4>
-                <input id="verEmail" placeholder="Email" style="width:100%; margin:4px 0;">
-                <input id="verCode" placeholder="Code (5 digits)" style="width:100%; margin:4px 0;">
-                <button id="btnVerify" style="margin-top:6px;">Valider</button>
-                <div id="verMsg" style="font-size:0.9em; margin-top:6px;"></div>
-              </div>
+              <div id="pager-top" class="pager"></div>
+              <div id="topics"></div>
+              <div id="pager-bottom" class="pager"></div>
 
-              <!-- Login -->
-              <div style="min-width:260px;">
-                <h4 style="margin:0 0 8px 0;">Connexion</h4>
-                <input id="logEmail" placeholder="Email" style="width:100%; margin:4px 0;">
-                <input id="logPwd" type="password" placeholder="Mot de passe" style="width:100%; margin:4px 0;">
-                <button id="btnLogin" style="margin-top:6px;">Se connecter</button>
-                <button id="btnLogout" style="margin-top:6px; display:none;">Se déconnecter</button>
-                <div id="logMsg" style="font-size:0.9em; margin-top:6px;"></div>
+              <div class="card footer-form" id="newTopicBox">
+                <p class="sous_section">DÉMARRER UN SUJET</p>
+                <div class="vstack">
+                  <div class="hstack" style="gap:10px;flex-wrap:wrap">
+                    <input id="topic-author" class="input" placeholder="Nom complet" style="flex:1 1 240px"/>
+                    <input id="topic-title" class="input" placeholder="Titre du sujet" style="flex:2 1 340px"/>
+                  </div>
+                  <textarea id="topic-body" class="input" rows="4" placeholder="Énoncé du sujet..."></textarea>
+                  <div class="hstack">
+                    <button id="btn-create-topic" class="btn">Publier le sujet</button>
+                    <span class="muted">Reste courtois et précis</span>
+                  </div>
+                </div>
               </div>
             </div>
-      </section>
-  </div><br><br><br>
+        
+            <div id="newTopicLocked" style="display:none; padding:12px; border:1px dashed #aaa; border-radius:10px;">
+                🔒 Tu peux consulter tous les forums. Mais pour publier ou commenter, connectes-toi.
+            </div>
+        </div><br><br>
+
+        <div class="text-service-aide">
+            Rejoindre aussi d'autres Forums simulaires :
+            <ul>
+              <li>Habitat : Un Site qui te permettra de te trouver une chambre èa louer, ou inversement des Locataires selon tes Goûts. Nous utililisons des algorithmes pour matcher les gens selon leurs habitudes de vie. ( bientot disponible )</li>
+              <li>Forum des Passionnés de l'Entreprenariat : Partage, Échange entre personnes mordus de l'entreprenariat. ( bientot disponible )</li>
+              <li>Espérance Saguenay : Tu as un projet que tu veux réaliser ? Sky is the LIMIT. ( bientot disponible )</li>
+            </ul>
+            Vous connaissez des liens vers des Forums interessants pour les Étudiants ? envoyez nous les liens à oremi.joel@gmail.com pour que je les ajoute à cette Liste.
+        </div><br><br>
+
+        <div class="text-service-aide">
+            <section id="authBox" style="border:1px solid #ddd; padding:12px; border-radius:10px; margin-bottom:16px;">
+                  <div id="authStatus" style="margin-bottom:10px;">Chargement…</div>
+
+                  <div id="authForms" style="display:flex; gap:18px; flex-wrap:wrap;">
+                    
+                    Register 
+
+                    <div id="inscription" style="min-width:260px;">
+                      <h4 style="margin:0 0 8px 0;">Inscription</h4>
+                      <input id="regFirst" placeholder="Prénom" style="width:100%; margin:4px 0;">
+                      <input id="regLast" placeholder="Nom" style="width:100%; margin:4px 0;">
+                      <input id="regEmail" placeholder="Email" style="width:100%; margin:4px 0;">
+                      <input id="regCity" placeholder="Ville" style="width:100%; margin:4px 0;">
+                      <input id="regPwd" type="password" placeholder="Mot de passe" style="width:100%; margin:4px 0;">
+                      <button id="btnRegister" style="margin-top:6px;">Créer le compte</button>
+                      <div id="regMsg" style="font-size:0.9em; margin-top:6px;"></div>
+                    </div>
+
+                    Verify
+
+                    <div id="validation" style="min-width:260px;">
+                      <h4 style="margin:0 0 8px 0;">Valider l’email</h4>
+                      <input id="verEmail" placeholder="Email" style="width:100%; margin:4px 0;">
+                      <input id="verCode" placeholder="Code (5 digits)" style="width:100%; margin:4px 0;">
+                      <button id="btnVerify" style="margin-top:6px;">Valider</button>
+                      <div id="verMsg" style="font-size:0.9em; margin-top:6px;"></div>
+                    </div>
+
+                    Login
+
+                    <div style="min-width:260px;">
+                      <h4 style="margin:0 0 8px 0;">Connexion</h4>
+                      <input id="logEmail" placeholder="Email" style="width:100%; margin:4px 0;">
+                      <input id="logPwd" type="password" placeholder="Mot de passe" style="width:100%; margin:4px 0;">
+                      <button id="btnLogin" style="margin-top:6px;">Se connecter</button>
+                      <button id="btnLogout" style="margin-top:6px; display:none;">Se déconnecter</button>
+                      <div id="logMsg" style="font-size:0.9em; margin-top:6px;"></div>
+                    </div>
+                  </div>
+            </section>
+        </div><br><br><br>
+      -->
 
       <script>
           const API = {
