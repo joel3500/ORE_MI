@@ -519,7 +519,7 @@ def nous_contacter():
 
 @app.route("/objets_perdus_retrouves")
 def objets_perdus_retrouves():
-    return render_template("objets_perdus_retrouves")
+    return render_template("objets_perdus_retrouves.html")
 
 
 @app.route("/participer_aux_evenements")
