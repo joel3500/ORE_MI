@@ -219,8 +219,8 @@
 
             // 2) UI + history: assistant (vide au départ, puis on l’alimente)
             const aiDiv = addMsg("", "oremi-ai");
-            const aiIndex = history.length;
-            history.push({ role: "assistant", content: "", ts: Date.now() });
+            history.push({ role:"assistant", content:"", ts: Date.now() });
+            const aiIndex = history.length - 1;
 
             setBusy(true);
             setStatus("Réponse en cours…");
@@ -277,15 +277,32 @@
 
                 for(const block of parts){
                   const dataStr = parseSSEChunk(block);
+                  console.log("SSE data:", dataStr);    // uniquement en Local pour des tests.
                   if(!dataStr) continue;
 
                   // Ton serveur envoie du JSON: {"text": "..."} ou {"done": true} :contentReference[oaicite:4]{index=4}
                   let obj = null;
-                  try{ obj = JSON.parse(dataStr); }catch(e){}
+                  try { obj = JSON.parse(dataStr); } catch(e) {}
 
-                  if(obj && obj.text){
-                    aiDiv.textContent += obj.text;
-                    history[aiIndex].content += obj.text;
+                  let chunkText = "";
+
+                  // 1) Cas JSON attendu
+                  if (obj) {
+                    // accepte plusieurs formats possibles
+                    chunkText =
+                      (typeof obj.text === "string" ? obj.text : "") ||
+                      (typeof obj.delta === "string" ? obj.delta : "") ||
+                      (typeof obj.content === "string" ? obj.content : "") ||
+                      (typeof obj.message === "string" ? obj.message : "") ||
+                      (typeof obj.output === "string" ? obj.output : "");
+                  } else {
+                    // 2) Cas texte brut SSE (pas du JSON) => on affiche quand même
+                    chunkText = dataStr;
+                  }
+
+                  if (chunkText) {
+                    aiDiv.textContent += chunkText;
+                    history[aiIndex].content += chunkText;
                     chatlog.scrollTop = chatlog.scrollHeight;
                     saveHistoryThrottled(false);
                   }
